@@ -42,5 +42,3 @@ describe('Tight node positioner', () => {
     expect(positioner.placeOnCanvas([0, 2])).toEqual({ x: 500, y: 500 })
   })
 })
-
-export {}
