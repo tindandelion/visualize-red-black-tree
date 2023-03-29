@@ -1,12 +1,11 @@
 import p5 from 'p5'
-import { NodePosition, TreeLayout, TreeNodeLinks } from './tidy-layout'
+import { isRed, RedBlackNode } from './red-black-tree'
+import { NodePosition, TreeLayout } from './tidy-layout'
 
 export type Point = { x: number; y: number }
 export type Dimension = { dx: number; dy: number }
 
-export interface TreeNode extends TreeNodeLinks {
-  value: string
-}
+type TreeNode = RedBlackNode<string>
 
 export class TightNodePositioner {
   constructor(
@@ -59,18 +58,30 @@ export class TreeDrawer {
   ) {
     this.preserveSettings(() => {
       this.canvas.stroke('#586e75')
-      if (parentCenter) this.connectNodes(nodeCenter, parentCenter)
+      if (parentCenter) this.connectNodes(nodeCenter, parentCenter, isRed(node))
       this.drawNodeOutline(nodeCenter)
       this.drawText(node.value, nodeCenter)
     })
   }
 
-  private connectNodes(nodeCenter: Point, parentCenter: Point) {
-    this.canvas.line(nodeCenter.x, nodeCenter.y, parentCenter.x, parentCenter.y)
+  private connectNodes(nodeCenter: Point, parentCenter: Point, isRed: boolean) {
+    this.preserveSettings(() => {
+      if (isRed) {
+        this.canvas.stroke('#dc322f')
+        this.canvas.strokeWeight(5)
+      }
+      this.canvas.line(
+        nodeCenter.x,
+        nodeCenter.y,
+        parentCenter.x,
+        parentCenter.y
+      )
+    })
   }
 
   private drawNodeOutline(nodeCenter: Point) {
     this.preserveSettings(() => {
+      this.canvas.fill('#eee8d5')
       this.canvas.circle(nodeCenter.x, nodeCenter.y, 40)
     })
   }

@@ -1,32 +1,40 @@
 import './style.css'
 import P5 from 'p5'
-import { TreeDrawer, TreeNode } from './drawing-tools'
+import { TreeDrawer } from './drawing-tools'
 import { tidyLayout } from './tidy-layout'
+import { insert, RedBlackNode } from './red-black-tree'
 
 const element = document.querySelector<HTMLDivElement>('#app')!
 
-const sketch = (p5: P5) => {
-  const tree: TreeNode = {
-    value: 'E',
-    left: {
-      value: 'A',
-      right: { value: 'C' },
-    },
-    right: {
-      value: 'S',
-      left: { value: 'R' },
-      right: { value: 'T' },
-    },
+function interval(millis: number, action: () => void) {
+  let lastInvoked = 0
+  return (timeElapsed: number) => {
+    if (lastInvoked + millis < timeElapsed) {
+      action()
+      lastInvoked = timeElapsed
+    }
   }
+}
 
-  const layout = tidyLayout(tree)
+const sketch = (p5: P5) => {
+  let tree: RedBlackNode<string>
+
+  const clearCanvas = () => p5.background('#fdf6e3')
+
+  const drawer = interval(1000, () => {
+    const letter = String.fromCharCode(Math.floor(Math.random() * 26) + 65)
+    tree = insert(tree, letter)
+    clearCanvas()
+    new TreeDrawer(p5, tidyLayout(tree), tree).draw()
+  })
 
   p5.setup = () => {
     p5.createCanvas(element.clientWidth, element.clientHeight)
+    clearCanvas()
   }
 
   p5.draw = () => {
-    new TreeDrawer(p5, layout, tree).draw()
+    return drawer(p5.millis())
   }
 }
 

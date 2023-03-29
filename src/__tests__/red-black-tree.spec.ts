@@ -91,7 +91,7 @@ describe('Red-black tree construction', () => {
       }
 
       const inserted = insert(tree, 'P')
-      expect(traverse(inserted)).toEqual('!MEC!AHRPS')
+      expect(traverse(inserted)).toEqual('MEC!AHRPS')
     })
   })
 })
