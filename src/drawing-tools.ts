@@ -8,31 +8,40 @@ export type Dimension = { dx: number; dy: number }
 type TreeNode = RedBlackNode<string>
 
 export class TightNodePositioner {
+  public nodeSpacing: number = 70
+  public aspectRatio: number = 0.5
+
   constructor(
     private readonly canvasSize: Dimension,
-    private readonly treeSize: Dimension,
-    private readonly nodeSpacing: number
+    private readonly treeSize: Dimension
   ) {}
 
   placeOnCanvas([nodeX, nodeY]: NodePosition): Point {
-    const x = (nodeX + 0.5) * this.nodeSpacing
-    const y = (nodeY + 0.5) * this.nodeSpacing
+    const x = (nodeX + 0.5) * this.nodeSpacingX
+    const y = (nodeY + 0.5) * this.nodeSpacingY
     return this.placeOnCanvasCenterAligned({ x, y })
   }
 
   private placeOnCanvasCenterAligned(relPt: Point): Point {
-    const totalTreeWidth = this.treeSize.dx * this.nodeSpacing
+    const totalTreeWidth = this.treeSize.dx * this.nodeSpacingX
     const offsetX = (this.canvasSize.dx - totalTreeWidth) / 2
 
-    const totalTreeHeight = this.treeSize.dy * this.nodeSpacing
+    const totalTreeHeight = this.treeSize.dy * this.nodeSpacingY
     const offsetY = (this.canvasSize.dy - totalTreeHeight) / 2
 
     return { x: relPt.x + offsetX, y: relPt.y + offsetY }
   }
+
+  private get nodeSpacingX() {
+    return this.nodeSpacing * this.aspectRatio
+  }
+
+  private get nodeSpacingY() {
+    return this.nodeSpacing
+  }
 }
 
 export class TreeDrawer {
-  private readonly nodeSpacing = 70
   private readonly nodePositioner: TightNodePositioner
 
   constructor(
@@ -42,8 +51,7 @@ export class TreeDrawer {
   ) {
     this.nodePositioner = new TightNodePositioner(
       { dx: this.canvas.width, dy: this.canvas.height },
-      { dx: this.layout.maxX + 1, dy: this.layout.maxY + 1 },
-      this.nodeSpacing
+      { dx: this.layout.maxX + 1, dy: this.layout.maxY + 1 }
     )
   }
 
