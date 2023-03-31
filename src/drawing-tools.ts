@@ -41,34 +41,53 @@ export class TightNodePositioner {
   }
 }
 
-export class TreeDrawer {
-  private readonly nodePositioner: TightNodePositioner
+export class VisualNode {
+  constructor(
+    readonly node: TreeNode,
+    readonly position: Point,
+    readonly left?: VisualNode,
+    readonly right?: VisualNode
+  ) {}
+}
+
+export class VisualTree {
+  readonly visualRoot: VisualNode | undefined
 
   constructor(
     private readonly canvas: p5,
     private readonly layout: TreeLayout,
-    private readonly root: TreeNode
+    root: TreeNode
   ) {
-    this.nodePositioner = new TightNodePositioner(
+    const nodePositioner = new TightNodePositioner(
       { dx: this.canvas.width, dy: this.canvas.height },
       { dx: this.layout.maxX + 1, dy: this.layout.maxY + 1 }
     )
+    this.visualRoot = this.buildVisualTree(root, nodePositioner)
   }
 
   draw() {
-    this.drawSubTree(this.root)
+    if (this.visualRoot) this.drawSubTree(this.visualRoot)
   }
 
-  private drawTreeNode(
-    node: TreeNode,
-    nodeCenter: Point,
-    parentCenter?: Point
-  ) {
+  private buildVisualTree(
+    node: TreeNode | undefined,
+    positioner: TightNodePositioner
+  ): VisualNode | undefined {
+    if (!node) return undefined
+
+    const left = this.buildVisualTree(node.left, positioner)
+    const right = this.buildVisualTree(node.right, positioner)
+    const position = positioner.placeOnCanvas(this.layout.getNodePosition(node))
+    return new VisualNode(node, position, left, right)
+  }
+
+  private drawTreeNode(visual: VisualNode, parentCenter?: Point) {
     this.preserveSettings(() => {
       this.canvas.stroke('#586e75')
-      if (parentCenter) this.connectNodes(nodeCenter, parentCenter, isRed(node))
-      this.drawNodeOutline(nodeCenter)
-      this.drawText(node.value, nodeCenter)
+      if (parentCenter)
+        this.connectNodes(visual.position, parentCenter, isRed(visual.node))
+      this.drawNodeOutline(visual.position)
+      this.drawText(visual.node.value, visual.position)
     })
   }
 
@@ -99,13 +118,10 @@ export class TreeDrawer {
     this.canvas.text(value, nodeCenter.x, nodeCenter.y)
   }
 
-  private drawSubTree(node: TreeNode, parentCenter?: Point) {
-    const nodeCenter = this.nodePositioner.placeOnCanvas(
-      this.layout.getNodePosition(node)
-    )
-    if (node.left) this.drawSubTree(node.left, nodeCenter)
-    if (node.right) this.drawSubTree(node.right, nodeCenter)
-    this.drawTreeNode(node, nodeCenter, parentCenter)
+  private drawSubTree(visual: VisualNode, parentCenter?: Point) {
+    if (visual.left) this.drawSubTree(visual.left, visual.position)
+    if (visual.right) this.drawSubTree(visual.right, visual.position)
+    this.drawTreeNode(visual, parentCenter)
   }
 
   private preserveSettings(action: () => void) {

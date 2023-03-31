@@ -1,6 +1,6 @@
 import './style.css'
 import P5 from 'p5'
-import { TreeDrawer, TreeNode } from './drawing-tools'
+import { VisualTree, TreeNode } from './drawing-tools'
 import { tidyLayout } from './tidy-layout'
 import { insert, RedBlackNode } from './red-black-tree'
 
@@ -27,7 +27,7 @@ function addNodesSketch(p5: P5) {
     const letter = String.fromCharCode(Math.floor(Math.random() * 26) + 65)
     tree = insert(tree, letter)
     clearCanvas(p5)
-    new TreeDrawer(p5, tidyLayout(tree), tree).draw()
+    new VisualTree(p5, tidyLayout(tree), tree).draw()
   })
 
   p5.setup = () => {
@@ -93,7 +93,7 @@ class StaticTreeAnimation implements AnimationClip {
   constructor(private readonly tree: TreeNode) {}
 
   drawFrame(p5: P5): void {
-    new TreeDrawer(p5, tidyLayout(this.tree), this.tree).draw()
+    new VisualTree(p5, tidyLayout(this.tree), this.tree).draw()
   }
 
   get isFinished() {
