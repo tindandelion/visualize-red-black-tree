@@ -22,12 +22,17 @@ export class TightNodePositioner {
     return this.placeOnCanvasCenterAligned({ x, y })
   }
 
-  private placeOnCanvasCenterAligned(relPt: Point): Point {
-    const totalTreeWidth = this.treeSize.dx * this.nodeSpacingX
-    const offsetX = (this.canvasSize.dx - totalTreeWidth) / 2
+  get totalTreeWidth() {
+    return this.treeSize.dx * this.nodeSpacingX
+  }
 
-    const totalTreeHeight = this.treeSize.dy * this.nodeSpacingY
-    const offsetY = (this.canvasSize.dy - totalTreeHeight) / 2
+  get totalTreeHeight() {
+    return this.treeSize.dy * this.nodeSpacingY
+  }
+
+  private placeOnCanvasCenterAligned(relPt: Point): Point {
+    const offsetX = (this.canvasSize.dx - this.totalTreeWidth) / 2
+    const offsetY = (this.canvasSize.dy - this.totalTreeHeight) / 2
 
     return { x: relPt.x + offsetX, y: relPt.y + offsetY }
   }
@@ -52,32 +57,39 @@ export class VisualNode {
 
 export class VisualTree {
   readonly visualRoot: VisualNode | undefined
+  private readonly nodePositioner: TightNodePositioner
 
   constructor(
     private readonly canvas: p5,
     private readonly layout: TreeLayout,
     root: TreeNode
   ) {
-    const nodePositioner = new TightNodePositioner(
+    this.nodePositioner = new TightNodePositioner(
       { dx: this.canvas.width, dy: this.canvas.height },
       { dx: this.layout.maxX + 1, dy: this.layout.maxY + 1 }
     )
-    this.visualRoot = this.buildVisualTree(root, nodePositioner)
+    this.visualRoot = this.buildVisualTree(root)
   }
 
   draw() {
     if (this.visualRoot) this.drawSubTree(this.visualRoot)
   }
 
-  private buildVisualTree(
-    node: TreeNode | undefined,
-    positioner: TightNodePositioner
-  ): VisualNode | undefined {
+  get isOversized(): boolean {
+    return (
+      this.nodePositioner.totalTreeWidth > this.canvas.width ||
+      this.nodePositioner.totalTreeHeight > this.canvas.height
+    )
+  }
+
+  private buildVisualTree(node: TreeNode | undefined): VisualNode | undefined {
     if (!node) return undefined
 
-    const left = this.buildVisualTree(node.left, positioner)
-    const right = this.buildVisualTree(node.right, positioner)
-    const position = positioner.placeOnCanvas(this.layout.getNodePosition(node))
+    const left = this.buildVisualTree(node.left)
+    const right = this.buildVisualTree(node.right)
+    const position = this.nodePositioner.placeOnCanvas(
+      this.layout.getNodePosition(node)
+    )
     return new VisualNode(node, position, left, right)
   }
 

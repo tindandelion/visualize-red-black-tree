@@ -2,98 +2,65 @@ import './style.css'
 import P5 from 'p5'
 import { VisualTree, TreeNode } from './drawing-tools'
 import { tidyLayout } from './tidy-layout'
-import { insert, RedBlackNode } from './red-black-tree'
+import { insert } from './red-black-tree'
+import {
+  AnimationClip,
+  AnimationDelay,
+  AnimationSequence,
+  FinishedAnimation,
+} from './animations'
 
 const element = document.querySelector<HTMLDivElement>('#app')!
-
-function interval(millis: number, action: () => void) {
-  let lastInvoked = 0
-  return (timeElapsed: number) => {
-    if (lastInvoked + millis < timeElapsed) {
-      action()
-      lastInvoked = timeElapsed
-    }
-  }
-}
 
 function clearCanvas(p5: P5) {
   p5.background('#fdf6e3')
 }
 
-function addNodesSketch(p5: P5) {
-  let tree: RedBlackNode<string>
-
-  const drawer = interval(1000, () => {
-    const letter = String.fromCharCode(Math.floor(Math.random() * 26) + 65)
-    tree = insert(tree, letter)
-    clearCanvas(p5)
-    new VisualTree(p5, tidyLayout(tree), tree).draw()
-  })
-
-  p5.setup = () => {
-    p5.createCanvas(element.clientWidth, element.clientHeight)
-    clearCanvas(p5)
-  }
-
-  p5.draw = () => {
-    return drawer(p5.millis())
-  }
-}
-
 function expandTreeSketch(p5: P5) {
-  let tree = createTree()
-  let animationClip: AnimationClip = new FinishedAnimation()
+  let tree: TreeNode
+  let visualTree: VisualTree
+  let animationClip: AnimationClip = FinishedAnimation
 
   p5.setup = () => {
     p5.createCanvas(element.clientWidth, element.clientHeight)
-
     clearCanvas(p5)
-    scheduleAddElement('A')
   }
 
   p5.draw = () => {
-    clearCanvas(p5)
     if (animationClip.isFinished) {
-      animationClip = nextAnimationClip(tree)
+      animationClip = updateTree()
     }
     animationClip.drawFrame(p5)
   }
 
-  function createTree() {
-    let tree = insert(undefined, 'D')
-    tree = insert(tree, 'C')
-    tree = insert(tree, 'E')
-    return tree
+  function updateTree() {
+    const letter = String.fromCharCode(Math.floor(Math.random() * 26) + 65)
+    if (!visualTree || visualTree.isOversized) tree = insert(undefined, letter)
+    else tree = insert(tree, letter)
+    visualTree = makeVisualTree(tree)
+    return nextAnimationClip()
   }
 
-  function scheduleAddElement(value: string) {
-    setTimeout(() => {
-      tree = insert(tree, value)
-    }, 1000)
+  function nextAnimationClip(): AnimationClip {
+    return new AnimationSequence([
+      new StaticTreeAnimation(visualTree),
+      new AnimationDelay(),
+    ])
   }
 
-  function nextAnimationClip(tree: TreeNode): AnimationClip {
-    return new StaticTreeAnimation(tree)
+  function makeVisualTree(tree: TreeNode): VisualTree {
+    return new VisualTree(p5, tidyLayout(tree), tree)
   }
-}
-
-interface AnimationClip {
-  readonly isFinished: boolean
-  drawFrame(p5: P5): void
-}
-
-class FinishedAnimation implements AnimationClip {
-  public readonly isFinished: boolean = true
-
-  drawFrame(_p5: P5) {}
 }
 
 class StaticTreeAnimation implements AnimationClip {
   private hasBeenDrawn = false
-  constructor(private readonly tree: TreeNode) {}
+  constructor(private readonly tree: VisualTree) {}
 
   drawFrame(p5: P5): void {
-    new VisualTree(p5, tidyLayout(this.tree), this.tree).draw()
+    clearCanvas(p5)
+    this.tree.draw()
+    this.hasBeenDrawn = true
   }
 
   get isFinished() {
