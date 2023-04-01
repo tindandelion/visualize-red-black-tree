@@ -5,7 +5,7 @@ import { NodePosition, TreeLayout } from './tidy-layout'
 export type Point = { x: number; y: number }
 export type Dimension = { dx: number; dy: number }
 
-export type TreeNode = RedBlackNode<string>
+export type TreeNode = RedBlackNode
 
 export class TightNodePositioner {
   public nodeSpacing: number = 70

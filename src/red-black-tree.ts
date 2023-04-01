@@ -2,28 +2,28 @@ import { TreeNodeLinks } from './tidy-layout'
 
 export type LinkColor = 'red' | 'black'
 
-export interface RedBlackNode<T> extends TreeNodeLinks {
-  value: T
+export interface RedBlackNode extends TreeNodeLinks {
+  value: string
   color: LinkColor
 }
 
-export function isRed<T>(n?: RedBlackNode<T>) {
+export function isRed(n?: RedBlackNode) {
   return !!n && n.color === 'red'
 }
 
-export function insert<T>(
-  root: RedBlackNode<T> | undefined,
-  value: T
-): RedBlackNode<T> {
+export function insert(
+  root: RedBlackNode | undefined,
+  value: string
+): RedBlackNode {
   const newRoot = performInsertion(root, value)
   newRoot.color = 'black'
   return newRoot
 }
 
-function performInsertion<T>(
-  root: RedBlackNode<T> | undefined,
-  value: T
-): RedBlackNode<T> {
+function performInsertion(
+  root: RedBlackNode | undefined,
+  value: string
+): RedBlackNode {
   if (!root) return { value, color: 'red' }
 
   if (root.value > value) root.left = performInsertion(root.left, value)
@@ -36,7 +36,7 @@ function performInsertion<T>(
   return root
 }
 
-function rotateLeft<T>(h: RedBlackNode<T>): RedBlackNode<T> {
+function rotateLeft(h: RedBlackNode): RedBlackNode {
   if (!h.right || !isRed(h.right)) throw new Error('Unable to rotate left')
 
   const x = h.right
@@ -47,7 +47,7 @@ function rotateLeft<T>(h: RedBlackNode<T>): RedBlackNode<T> {
   return x
 }
 
-function rotateRight<T>(h: RedBlackNode<T>): RedBlackNode<T> {
+function rotateRight(h: RedBlackNode): RedBlackNode {
   if (!h.left || !isRed(h.left)) throw new Error('Unable to rotate right')
 
   const x = h.left
@@ -58,7 +58,7 @@ function rotateRight<T>(h: RedBlackNode<T>): RedBlackNode<T> {
   return x
 }
 
-function flipColors<T>(h: RedBlackNode<T>): RedBlackNode<T> {
+function flipColors(h: RedBlackNode): RedBlackNode {
   if (!h.left || !h.right)
     throw new Error('No children to flip colors of ' + h.value)
   const canFlip = !isRed(h) && isRed(h.left) && isRed(h.right)
