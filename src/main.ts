@@ -1,14 +1,13 @@
 import './style.css'
 import P5 from 'p5'
-import { VisualTree, TreeNode } from './drawing-tools'
+import { TreeVisualization, TreeNode } from './drawing-tools'
 import { tidyLayout } from './tidy-layout'
 import { insert } from './red-black-tree'
 import {
-  AnimationClip,
-  AnimationDelay,
-  AnimationSequence,
-  FinishedAnimation,
-} from './animations'
+  VisualizationTransition,
+  VisualizationDelay,
+  FinishedTransition,
+} from './transitions'
 
 const element = document.querySelector<HTMLDivElement>('#app')!
 
@@ -17,54 +16,44 @@ function clearCanvas(p5: P5) {
 }
 
 function expandTreeSketch(p5: P5) {
-  let tree: TreeNode
-  let visualTree: VisualTree
-  let animationClip: AnimationClip = FinishedAnimation
+  let tree: TreeNode = updateSourceTree(true)
+  let currentVisualization: TreeVisualization
+  let updatedVisualization: TreeVisualization
+  let transition: VisualizationTransition = FinishedTransition
 
   p5.setup = () => {
     p5.createCanvas(element.clientWidth, element.clientHeight)
     clearCanvas(p5)
+    updatedVisualization = visualizeTree(tree)
   }
 
   p5.draw = () => {
-    if (animationClip.isFinished) {
-      animationClip = updateTree()
+    if (transition.isFinished) {
+      currentVisualization = updatedVisualization
+      tree = updateSourceTree(currentVisualization.isOversized)
+      updatedVisualization = visualizeTree(tree)
+      transition = createTransition(currentVisualization, updatedVisualization)
     }
-    animationClip.drawFrame(p5)
-  }
-
-  function updateTree() {
-    const letter = String.fromCharCode(Math.floor(Math.random() * 26) + 65)
-    if (!visualTree || visualTree.isOversized) tree = insert(undefined, letter)
-    else tree = insert(tree, letter)
-    visualTree = makeVisualTree(tree)
-    return nextAnimationClip()
-  }
-
-  function nextAnimationClip(): AnimationClip {
-    return new AnimationSequence([
-      new StaticTreeAnimation(visualTree),
-      new AnimationDelay(),
-    ])
-  }
-
-  function makeVisualTree(tree: TreeNode): VisualTree {
-    return new VisualTree(p5, tidyLayout(tree), tree)
-  }
-}
-
-class StaticTreeAnimation implements AnimationClip {
-  private hasBeenDrawn = false
-  constructor(private readonly tree: VisualTree) {}
-
-  drawFrame(p5: P5): void {
+    transition.update(p5.millis())
     clearCanvas(p5)
-    this.tree.draw()
-    this.hasBeenDrawn = true
+    currentVisualization.draw()
   }
 
-  get isFinished() {
-    return this.hasBeenDrawn
+  function updateSourceTree(startOver: boolean) {
+    const letter = String.fromCharCode(Math.floor(Math.random() * 26) + 65)
+    if (startOver) return insert(undefined, letter)
+    else return insert(tree, letter)
+  }
+
+  function createTransition(
+    current: TreeVisualization,
+    updated: TreeVisualization
+  ) {
+    return new VisualizationDelay()
+  }
+
+  function visualizeTree(tree: TreeNode): TreeVisualization {
+    return new TreeVisualization(p5, tidyLayout(tree), tree)
   }
 }
 
