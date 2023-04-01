@@ -1,22 +1,84 @@
+import { Point, VisualNode } from './tree-visualization'
+
 export interface VisualizationTransition {
   readonly isFinished: boolean
   update(timeElapsed: number): void
 }
 
-export class VisualizationDelay implements VisualizationTransition {
-  private readonly delay = 1000
-  private startTime: number | undefined = undefined
-  private currentTime: number | undefined = undefined
+export abstract class IntervalTransition implements VisualizationTransition {
+  private startTime?: number
+  private lastUpdated?: number
+
+  constructor(public readonly interval: number) {}
 
   update(timeElapsed: number): void {
-    if (!this.startTime) this.startTime = timeElapsed
-    else this.currentTime = timeElapsed
+    if (this.startTime === undefined) this.startTime = timeElapsed
+
+    this.lastUpdated = timeElapsed
+    this.doUpdate()
   }
 
   get isFinished(): boolean {
-    if (this.currentTime && this.startTime)
-      return this.startTime + this.delay < this.currentTime
-    else return false
+    return this.timeDelta >= this.interval
+  }
+
+  protected abstract doUpdate(): void
+
+  protected get timeDelta(): number {
+    if (this.startTime === undefined || this.lastUpdated === undefined) return 0
+    else return this.lastUpdated - this.startTime
+  }
+}
+
+export class VisualizationDelay extends IntervalTransition {
+  private static readonly delay = 1000
+
+  protected doUpdate(): void {}
+
+  constructor() {
+    super(VisualizationDelay.delay)
+  }
+}
+
+export class MoveNodeTransition extends IntervalTransition {
+  static readonly interval = 1000
+  private readonly startPosition: Point
+
+  constructor(
+    private readonly node: VisualNode,
+    private readonly destPosition: Point
+  ) {
+    super(MoveNodeTransition.interval)
+    this.startPosition = { ...node.position }
+  }
+
+  protected doUpdate(): void {
+    const currentPosition = {
+      x:
+        this.startPosition.x +
+        ((this.destPosition.x - this.startPosition.x) / this.interval) *
+          this.timeDelta,
+      y:
+        this.startPosition.y +
+        ((this.destPosition.y - this.startPosition.y) / this.interval) *
+          this.timeDelta,
+    }
+    this.node.position = currentPosition
+  }
+
+  toString() {
+    return [
+      'Move ',
+      this.node.value,
+      ': ',
+      this.pointToString(this.startPosition),
+      ' -> ',
+      this.pointToString(this.destPosition),
+    ].join('')
+  }
+
+  private pointToString(pt: Point) {
+    return `(${pt.x},${pt.y})`
   }
 }
 

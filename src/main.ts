@@ -1,6 +1,6 @@
 import './style.css'
 import P5 from 'p5'
-import { TreeVisualization, TreeNode } from './drawing-tools'
+import { TreeVisualization, TreeNode } from './tree-visualization'
 import { tidyLayout } from './tidy-layout'
 import { insert } from './red-black-tree'
 import {

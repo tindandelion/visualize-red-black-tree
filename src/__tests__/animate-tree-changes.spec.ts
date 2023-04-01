@@ -1,4 +1,4 @@
-import { Point } from '../drawing-tools'
+import { Point } from '../tree-visualization'
 
 type VisualNode = {
   value: string

@@ -50,7 +50,7 @@ export class VisualNode {
   constructor(
     readonly value: string,
     readonly color: LinkColor,
-    readonly position: Point,
+    public position: Point,
     readonly left?: VisualNode,
     readonly right?: VisualNode
   ) {}
