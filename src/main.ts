@@ -7,7 +7,10 @@ import {
   VisualizationTransition,
   VisualizationDelay,
   FinishedTransition,
+  TransitionSequence,
+  ParallelTransition,
 } from './transitions'
+import { moveNodes } from './move-nodes'
 
 const element = document.querySelector<HTMLDivElement>('#app')!
 
@@ -16,7 +19,7 @@ function clearCanvas(p5: P5) {
 }
 
 function expandTreeSketch(p5: P5) {
-  let tree: TreeNode = updateSourceTree(true)
+  let tree: TreeNode
   let currentVisualization: TreeVisualization
   let updatedVisualization: TreeVisualization
   let transition: VisualizationTransition = FinishedTransition
@@ -24,32 +27,48 @@ function expandTreeSketch(p5: P5) {
   p5.setup = () => {
     p5.createCanvas(element.clientWidth, element.clientHeight)
     clearCanvas(p5)
-    updatedVisualization = visualizeTree(tree)
+    startAnimation()
   }
 
   p5.draw = () => {
     if (transition.isFinished) {
       currentVisualization = updatedVisualization
-      tree = updateSourceTree(currentVisualization.isOversized)
+      tree = insert(tree, randomChar())
       updatedVisualization = visualizeTree(tree)
-      transition = createTransition(currentVisualization, updatedVisualization)
+      if (updatedVisualization.isOversized) startAnimation()
+      else
+        transition = createTransition(
+          currentVisualization,
+          updatedVisualization
+        )
     }
     transition.update(p5.millis())
     clearCanvas(p5)
     currentVisualization.draw()
   }
 
-  function updateSourceTree(startOver: boolean) {
-    const letter = String.fromCharCode(Math.floor(Math.random() * 26) + 65)
-    if (startOver) return insert(undefined, letter)
-    else return insert(tree, letter)
+  function startAnimation() {
+    tree = insert(undefined, randomChar())
+    currentVisualization = visualizeTree(tree)
+    updatedVisualization = currentVisualization
+    transition = FinishedTransition
+  }
+
+  function randomChar() {
+    return String.fromCharCode(Math.floor(Math.random() * 26) + 65)
   }
 
   function createTransition(
     current: TreeVisualization,
     updated: TreeVisualization
   ) {
-    return new VisualizationDelay()
+    if (!current.visualRoot || !updated.visualRoot) return FinishedTransition
+
+    const transitions = moveNodes(current.visualRoot, updated.visualRoot)
+    return new TransitionSequence([
+      new VisualizationDelay(500),
+      new ParallelTransition([...transitions]),
+    ])
   }
 
   function visualizeTree(tree: TreeNode): TreeVisualization {

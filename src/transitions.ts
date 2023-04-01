@@ -31,12 +31,12 @@ export abstract class IntervalTransition implements VisualizationTransition {
 }
 
 export class VisualizationDelay extends IntervalTransition {
-  private static readonly delay = 1000
+  private static readonly defaultDelay = 1000
 
   protected doUpdate(): void {}
 
-  constructor() {
-    super(VisualizationDelay.delay)
+  constructor(delay: number = VisualizationDelay.defaultDelay) {
+    super(delay)
   }
 }
 
@@ -93,6 +93,22 @@ export class TransitionSequence implements VisualizationTransition {
 
   get isFinished() {
     return this.transitions.length === 0
+  }
+}
+
+export class ParallelTransition implements VisualizationTransition {
+  constructor(private readonly transitions: VisualizationTransition[]) {}
+
+  update(timeElapsed: number): void {
+    this.unfinishedTransitions.forEach((t) => t.update(timeElapsed))
+  }
+
+  get isFinished(): boolean {
+    return this.unfinishedTransitions.length === 0
+  }
+
+  private get unfinishedTransitions(): VisualizationTransition[] {
+    return this.transitions.filter((t) => !t.isFinished)
   }
 }
 
