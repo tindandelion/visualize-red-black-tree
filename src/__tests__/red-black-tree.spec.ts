@@ -1,16 +1,11 @@
 import { insert, isRed, RedBlackNode } from '../red-black-tree'
 
-function traverse(tree: RedBlackNode) {
-  let result = ''
-
-  function visitNode(node: RedBlackNode) {
-    result += (isRed(node) ? '!' : '') + node.value
-    if (node.left) visitNode(node.left)
-    if (node.right) visitNode(node.right)
+function toString(node?: RedBlackNode): string {
+  if (!node) return ''
+  else {
+    const nodeValue = (isRed(node) ? '!' : '') + node.value
+    return nodeValue + toString(node.left) + toString(node.right)
   }
-
-  visitNode(tree)
-  return result
 }
 
 describe('Red-black tree construction', () => {
@@ -28,7 +23,7 @@ describe('Red-black tree construction', () => {
       }
 
       const inserted = insert(tree, 'A')
-      expect(traverse(inserted)).toEqual('EB!AS!R')
+      expect(toString(inserted)).toEqual('EB!AS!R')
     })
 
     it('inserts the node at the bottom as a right node', () => {
@@ -44,7 +39,7 @@ describe('Red-black tree construction', () => {
       }
 
       const inserted = insert(tree, 'C')
-      expect(traverse(inserted)).toEqual('EC!AS!R')
+      expect(toString(inserted)).toEqual('EC!AS!R')
     })
 
     it('inserts into a 3-node at the bottom', () => {
@@ -64,7 +59,7 @@ describe('Red-black tree construction', () => {
       }
 
       const inserted = insert(tree, 'H')
-      expect(traverse(inserted)).toEqual('R!EC!AHS')
+      expect(toString(inserted)).toEqual('R!EC!AHS')
     })
 
     it('passes red links up the tree', () => {
@@ -89,7 +84,7 @@ describe('Red-black tree construction', () => {
       }
 
       const inserted = insert(tree, 'P')
-      expect(traverse(inserted)).toEqual('MEC!AHRPS')
+      expect(toString(inserted)).toEqual('MEC!AHRPS')
     })
   })
 })
