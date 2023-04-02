@@ -1,8 +1,8 @@
 import './style.css'
 import P5 from 'p5'
-import { TreeVisualization, TreeNode } from './tree-visualization'
+import { TreeVisualization } from './tree-visualization'
 import { tidyLayout } from './tidy-layout'
-import { insert } from './red-black-tree'
+import { RedBlackNode, insert } from './red-black-tree'
 import {
   VisualizationTransition,
   VisualizationDelay,
@@ -19,7 +19,7 @@ function clearCanvas(p5: P5) {
 }
 
 function expandTreeSketch(p5: P5) {
-  let tree: TreeNode
+  let tree: RedBlackNode
   let currentVisualization: TreeVisualization
   let updatedVisualization: TreeVisualization
   let transition: VisualizationTransition = FinishedTransition
@@ -71,7 +71,7 @@ function expandTreeSketch(p5: P5) {
     ])
   }
 
-  function visualizeTree(tree: TreeNode): TreeVisualization {
+  function visualizeTree(tree: RedBlackNode): TreeVisualization {
     return new TreeVisualization(p5, tidyLayout(tree), tree)
   }
 }

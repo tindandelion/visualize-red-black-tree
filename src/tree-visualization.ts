@@ -5,7 +5,11 @@ import { NodePosition, TreeLayout } from './tidy-layout'
 export type Point = { x: number; y: number }
 export type Dimension = { dx: number; dy: number }
 
-export type TreeNode = RedBlackNode
+const palette = {
+  outlineColor: '#586e75',
+  nodeFillColor: '#eee8d5',
+  redNodeColor: '#dc322f',
+}
 
 export class TightNodePositioner {
   public nodeSpacing: number = 70
@@ -63,7 +67,7 @@ export class TreeVisualization {
   constructor(
     private readonly canvas: p5,
     private readonly layout: TreeLayout,
-    root: TreeNode
+    root: RedBlackNode
   ) {
     this.nodePositioner = new TightNodePositioner(
       { dx: this.canvas.width, dy: this.canvas.height },
@@ -83,7 +87,9 @@ export class TreeVisualization {
     )
   }
 
-  private buildVisualTree(node: TreeNode | undefined): VisualNode | undefined {
+  private buildVisualTree(
+    node: RedBlackNode | undefined
+  ): VisualNode | undefined {
     if (!node) return undefined
 
     const left = this.buildVisualTree(node.left)
@@ -96,32 +102,24 @@ export class TreeVisualization {
 
   private drawTreeNode(visual: VisualNode, parentCenter?: Point) {
     this.preserveSettings(() => {
-      this.canvas.stroke('#586e75')
-      if (parentCenter)
-        this.connectNodes(visual.position, parentCenter, isRed(visual))
-      this.drawNodeOutline(visual.position)
+      this.canvas.stroke(palette.outlineColor)
+      if (parentCenter) this.connectNodes(visual.position, parentCenter)
+      this.drawNodeOutline(visual.position, isRed(visual))
       this.drawText(visual.value, visual.position)
     })
   }
 
-  private connectNodes(nodeCenter: Point, parentCenter: Point, isRed: boolean) {
-    this.preserveSettings(() => {
-      if (isRed) {
-        this.canvas.stroke('#dc322f')
-        this.canvas.strokeWeight(5)
-      }
-      this.canvas.line(
-        nodeCenter.x,
-        nodeCenter.y,
-        parentCenter.x,
-        parentCenter.y
-      )
-    })
+  private connectNodes(nodeCenter: Point, parentCenter: Point) {
+    this.canvas.line(nodeCenter.x, nodeCenter.y, parentCenter.x, parentCenter.y)
   }
 
-  private drawNodeOutline(nodeCenter: Point) {
+  private drawNodeOutline(nodeCenter: Point, isRed: boolean) {
     this.preserveSettings(() => {
-      this.canvas.fill('#eee8d5')
+      if (isRed) {
+        this.canvas.stroke(palette.redNodeColor)
+        this.canvas.strokeWeight(2)
+      }
+      this.canvas.fill(palette.nodeFillColor)
       this.canvas.circle(nodeCenter.x, nodeCenter.y, 40)
     })
   }
