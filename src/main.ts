@@ -2,7 +2,6 @@ import './style.css'
 import P5 from 'p5'
 import { TreeVisualization } from './tree-visualization'
 import { tidyLayout } from './tidy-layout'
-import { RedBlackNode, insert } from './red-black-tree'
 import {
   VisualizationTransition,
   VisualizationDelay,
@@ -11,6 +10,7 @@ import {
   ParallelTransition,
 } from './transitions'
 import { moveNodes } from './move-nodes'
+import { RedBlackNode, insert } from './red-black-tree-iterations'
 
 const element = document.querySelector<HTMLDivElement>('#app')!
 
@@ -19,7 +19,8 @@ function clearCanvas(p5: P5) {
 }
 
 function expandTreeSketch(p5: P5) {
-  let tree: RedBlackNode
+  let trees: RedBlackNode[] = []
+  let currentTree: RedBlackNode
   let currentVisualization: TreeVisualization
   let updatedVisualization: TreeVisualization
   let transition: VisualizationTransition = FinishedTransition
@@ -33,8 +34,8 @@ function expandTreeSketch(p5: P5) {
   p5.draw = () => {
     if (transition.isFinished) {
       currentVisualization = updatedVisualization
-      tree = insert(tree, randomChar())
-      updatedVisualization = visualizeTree(tree)
+      currentTree = nextTreeToVisualize()
+      updatedVisualization = visualizeTree(currentTree)
       if (updatedVisualization.isOversized) startAnimation()
       else
         transition = createTransition(
@@ -48,10 +49,16 @@ function expandTreeSketch(p5: P5) {
   }
 
   function startAnimation() {
-    tree = insert(undefined, randomChar())
-    currentVisualization = visualizeTree(tree)
+    trees = [...insert(randomChar())]
+    currentTree = nextTreeToVisualize()
+    currentVisualization = visualizeTree(currentTree)
     updatedVisualization = currentVisualization
     transition = FinishedTransition
+  }
+
+  function nextTreeToVisualize(): RedBlackNode {
+    if (trees.length === 0) trees = [...insert(randomChar(), currentTree)]
+    return trees.shift()!
   }
 
   function randomChar() {

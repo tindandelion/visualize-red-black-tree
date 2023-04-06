@@ -1,5 +1,5 @@
 import p5 from 'p5'
-import { isRed, LinkColor, RedBlackNode } from './red-black-tree'
+import { isRed, LinkColor, RedBlackNode } from './red-black-tree-iterations'
 import { NodePosition, TreeLayout } from './tidy-layout'
 
 export type Point = { x: number; y: number }
