@@ -27,26 +27,21 @@ function* _insert(value: string, root?: RedBlackNode): Generator<RedBlackNode> {
   }
 
   if (root.value > value) {
-    for (const left of _insert(value, root.left)) {
-      root = { ...root, left }
-      yield root
-    }
+    for (const left of _insert(value, root.left))
+      yield (root = { ...root, left })
   } else {
-    for (const right of _insert(value, root.right)) {
-      root = { ...root, right }
-      yield root
-    }
+    for (const right of _insert(value, root.right))
+      yield (root = { ...root, right })
   }
 
   const needsRotation =
     isRed(root.right) || (isRed(root.left) && isRed(root.left?.left))
 
   if (needsRotation) {
-    let r = root
-    if (isRed(r.right) && !isRed(r.left)) r = rotateLeft(r)
-    if (isRed(r.left) && isRed(r.left?.left)) r = rotateRight(r)
-    if (isRed(r.left) && isRed(r.right)) r = flipColors(r)
-    yield r
+    if (isRed(root.right) && !isRed(root.left)) yield (root = rotateLeft(root))
+    if (isRed(root.left) && isRed(root.left?.left))
+      yield (root = rotateRight(root))
+    if (isRed(root.left) && isRed(root.right)) yield (root = flipColors(root))
   }
 }
 

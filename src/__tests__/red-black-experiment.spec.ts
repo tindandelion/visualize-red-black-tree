@@ -35,7 +35,7 @@ describe('Red-black tree construction', () => {
     }
 
     const mutations = [...insert('B', root)]
-    expect(toString(mutations)).toEqual(['H!F!B', 'FBH'])
+    expect(toString(mutations)).toEqual(['H!F!B', 'F!B!H', 'FBH'])
   })
 
   it('applies rotations on deeper levels', () => {
@@ -50,7 +50,7 @@ describe('Red-black tree construction', () => {
     }
 
     const mutations = [...insert('B', root)]
-    expect(toString(mutations)).toEqual(['KH!F!B', 'K!FBH'])
+    expect(toString(mutations)).toEqual(['KH!F!B', 'KF!B!H', 'K!FBH'])
   })
 
   it('inserts into a complex tree ', () => {
@@ -79,6 +79,7 @@ describe('Red-black tree construction', () => {
       'R!EC!AM!H!PS',
       'R!EC!A!MHPS',
       'R!M!EC!AHPS',
+      'M!EC!AH!RPS',
       'MEC!AHRPS',
     ])
   })
