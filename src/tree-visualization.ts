@@ -1,5 +1,5 @@
 import p5 from 'p5'
-import { isRed, LinkColor, RedBlackNode } from './red-black-tree-iterations'
+import { isRed, LinkColor, RedBlackNode } from './red-black-tree-construction'
 import { NodePosition, TreeLayout } from './tidy-layout'
 
 export type Point = { x: number; y: number }
@@ -58,6 +58,34 @@ export class VisualNode {
     readonly left?: VisualNode,
     readonly right?: VisualNode
   ) {}
+
+  draw(canvas: p5) {
+    preserveSettings(canvas, () => this.drawOutline(canvas))
+    this.drawText(canvas)
+  }
+
+  private drawOutline(canvas: p5) {
+    if (isRed(this)) {
+      canvas.stroke(palette.redNodeColor)
+      canvas.strokeWeight(2)
+    }
+    canvas.fill(palette.nodeFillColor)
+    canvas.circle(this.position.x, this.position.y, 40)
+  }
+
+  private drawText(canvas: p5) {
+    canvas.textAlign('center', 'center')
+    canvas.text(this.value, this.position.x, this.position.y)
+  }
+}
+
+function preserveSettings(canvas: p5, action: () => void) {
+  canvas.push()
+  try {
+    action()
+  } finally {
+    canvas.pop()
+  }
 }
 
 export class TreeVisualization {
@@ -77,7 +105,8 @@ export class TreeVisualization {
   }
 
   draw() {
-    if (this.visualRoot) this.drawSubTree(this.visualRoot)
+    if (!this.visualRoot) return
+    this.drawSubTree(this.visualRoot)
   }
 
   get isOversized(): boolean {
@@ -101,11 +130,10 @@ export class TreeVisualization {
   }
 
   private drawTreeNode(visual: VisualNode, parentCenter?: Point) {
-    this.preserveSettings(() => {
+    preserveSettings(this.canvas, () => {
       this.canvas.stroke(palette.outlineColor)
       if (parentCenter) this.connectNodes(visual.position, parentCenter)
-      this.drawNodeOutline(visual.position, isRed(visual))
-      this.drawText(visual.value, visual.position)
+      visual.draw(this.canvas)
     })
   }
 
@@ -113,34 +141,9 @@ export class TreeVisualization {
     this.canvas.line(nodeCenter.x, nodeCenter.y, parentCenter.x, parentCenter.y)
   }
 
-  private drawNodeOutline(nodeCenter: Point, isRed: boolean) {
-    this.preserveSettings(() => {
-      if (isRed) {
-        this.canvas.stroke(palette.redNodeColor)
-        this.canvas.strokeWeight(2)
-      }
-      this.canvas.fill(palette.nodeFillColor)
-      this.canvas.circle(nodeCenter.x, nodeCenter.y, 40)
-    })
-  }
-
-  private drawText(value: string, nodeCenter: Point) {
-    this.canvas.textAlign('center', 'center')
-    this.canvas.text(value, nodeCenter.x, nodeCenter.y)
-  }
-
   private drawSubTree(visual: VisualNode, parentCenter?: Point) {
     if (visual.left) this.drawSubTree(visual.left, visual.position)
     if (visual.right) this.drawSubTree(visual.right, visual.position)
     this.drawTreeNode(visual, parentCenter)
-  }
-
-  private preserveSettings(action: () => void) {
-    this.canvas.push()
-    try {
-      action()
-    } finally {
-      this.canvas.pop()
-    }
   }
 }

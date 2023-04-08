@@ -10,7 +10,7 @@ import {
   ParallelTransition,
 } from './transitions'
 import { moveNodes } from './move-nodes'
-import { RedBlackNode, insert } from './red-black-tree-iterations'
+import { Mutation, RedBlackNode, insert } from './red-black-tree-construction'
 
 const element = document.querySelector<HTMLDivElement>('#app')!
 
@@ -19,8 +19,8 @@ function clearCanvas(p5: P5) {
 }
 
 function expandTreeSketch(p5: P5) {
-  let trees: RedBlackNode[] = []
-  let currentTree: RedBlackNode
+  let mutations: Mutation[] = []
+  let currentMutation: Mutation
   let currentVisualization: TreeVisualization
   let updatedVisualization: TreeVisualization
   let transition: VisualizationTransition = FinishedTransition
@@ -34,8 +34,8 @@ function expandTreeSketch(p5: P5) {
   p5.draw = () => {
     if (transition.isFinished) {
       currentVisualization = updatedVisualization
-      currentTree = nextTreeToVisualize()
-      updatedVisualization = visualizeTree(currentTree)
+      currentMutation = nextMutationToVisualize()
+      updatedVisualization = visualizeTree(currentMutation.result)
       if (updatedVisualization.isOversized) startAnimation()
       else
         transition = createTransition(
@@ -49,17 +49,18 @@ function expandTreeSketch(p5: P5) {
   }
 
   function startAnimation() {
-    trees = [...insert(randomChar())].map((m) => m.result)
-    currentTree = nextTreeToVisualize()
-    currentVisualization = visualizeTree(currentTree)
+    mutations = [...insert(randomChar())]
+    currentMutation = nextMutationToVisualize()
+    currentVisualization = visualizeTree(currentMutation.result)
     updatedVisualization = currentVisualization
     transition = FinishedTransition
   }
 
-  function nextTreeToVisualize(): RedBlackNode {
-    if (trees.length === 0)
-      trees = [...insert(randomChar(), currentTree)].map((m) => m.result)
-    return trees.shift()!
+  function nextMutationToVisualize() {
+    if (mutations.length === 0)
+      mutations = [...insert(randomChar(), currentMutation.result)]
+
+    return mutations.shift()!
   }
 
   function randomChar() {
@@ -72,10 +73,10 @@ function expandTreeSketch(p5: P5) {
   ) {
     if (!current.visualRoot || !updated.visualRoot) return FinishedTransition
 
-    const transitions = moveNodes(current.visualRoot, updated.visualRoot)
+    const moveTransitions = moveNodes(current.visualRoot, updated.visualRoot)
     return new TransitionSequence([
       new VisualizationDelay(500),
-      new ParallelTransition([...transitions]),
+      new ParallelTransition([...moveTransitions]),
     ])
   }
 

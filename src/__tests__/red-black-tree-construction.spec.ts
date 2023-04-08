@@ -3,7 +3,7 @@ import {
   isRed,
   insert,
   Mutation,
-} from '../red-black-tree-iterations'
+} from '../red-black-tree-construction'
 
 function toString(mutations: Mutation[]): string[] {
   function nodeToString(node?: RedBlackNode): string {
