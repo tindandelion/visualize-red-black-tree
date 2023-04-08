@@ -1,6 +1,11 @@
-import { RedBlackNode, isRed, insert } from '../red-black-tree-iterations'
+import {
+  RedBlackNode,
+  isRed,
+  insert,
+  Mutation,
+} from '../red-black-tree-iterations'
 
-function toString(nodes: RedBlackNode[]): string[] {
+function toString(mutations: Mutation[]): string[] {
   function nodeToString(node?: RedBlackNode): string {
     if (!node) return ''
     else {
@@ -9,7 +14,14 @@ function toString(nodes: RedBlackNode[]): string[] {
     }
   }
 
-  return nodes.map((n) => nodeToString(n))
+  function mutationToString(m: Mutation) {
+    let result = m.kind
+    if (m.node) result += '(' + m.node.value + ')'
+    result += ' ' + nodeToString(m.result)
+    return result
+  }
+
+  return mutations.map(mutationToString)
 }
 
 describe('Red-black tree construction', () => {
@@ -17,14 +29,14 @@ describe('Red-black tree construction', () => {
     const root: RedBlackNode = { value: 'H', color: 'black' }
 
     const mutations = [...insert('F', root)]
-    expect(toString(mutations)).toEqual(['H!F'])
+    expect(toString(mutations)).toEqual(['insert H!F'])
   })
 
   it('inserts a node with a single rotation', () => {
     const root: RedBlackNode = { value: 'H', color: 'black' }
 
     const mutations = [...insert('K', root)]
-    expect(toString(mutations)).toEqual(['H!K', 'K!H'])
+    expect(toString(mutations)).toEqual(['insert H!K', 'rotate-left K!H'])
   })
 
   it('inserts a node with a rotation and a flip', () => {
@@ -35,7 +47,11 @@ describe('Red-black tree construction', () => {
     }
 
     const mutations = [...insert('B', root)]
-    expect(toString(mutations)).toEqual(['H!F!B', 'F!B!H', 'FBH'])
+    expect(toString(mutations)).toEqual([
+      'insert H!F!B',
+      'rotate-right F!B!H',
+      'flip-colors(F) FBH',
+    ])
   })
 
   it('applies rotations on deeper levels', () => {
@@ -50,7 +66,11 @@ describe('Red-black tree construction', () => {
     }
 
     const mutations = [...insert('B', root)]
-    expect(toString(mutations)).toEqual(['KH!F!B', 'KF!B!H', 'K!FBH'])
+    expect(toString(mutations)).toEqual([
+      'insert KH!F!B',
+      'rotate-right KF!B!H',
+      'flip-colors(F) K!FBH',
+    ])
   })
 
   it('inserts into a complex tree ', () => {
@@ -76,11 +96,11 @@ describe('Red-black tree construction', () => {
 
     const mutations = [...insert('P', tree)]
     expect(toString(mutations)).toEqual([
-      'R!EC!AM!H!PS',
-      'R!EC!A!MHPS',
-      'R!M!EC!AHPS',
-      'M!EC!AH!RPS',
-      'MEC!AHRPS',
+      'insert R!EC!AM!H!PS',
+      'flip-colors(M) R!EC!A!MHPS',
+      'rotate-left R!M!EC!AHPS',
+      'rotate-right M!EC!AH!RPS',
+      'flip-colors(M) MEC!AHRPS',
     ])
   })
 })

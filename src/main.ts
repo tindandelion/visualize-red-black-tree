@@ -49,7 +49,7 @@ function expandTreeSketch(p5: P5) {
   }
 
   function startAnimation() {
-    trees = [...insert(randomChar())]
+    trees = [...insert(randomChar())].map((m) => m.result)
     currentTree = nextTreeToVisualize()
     currentVisualization = visualizeTree(currentTree)
     updatedVisualization = currentVisualization
@@ -57,7 +57,8 @@ function expandTreeSketch(p5: P5) {
   }
 
   function nextTreeToVisualize(): RedBlackNode {
-    if (trees.length === 0) trees = [...insert(randomChar(), currentTree)]
+    if (trees.length === 0)
+      trees = [...insert(randomChar(), currentTree)].map((m) => m.result)
     return trees.shift()!
   }
 

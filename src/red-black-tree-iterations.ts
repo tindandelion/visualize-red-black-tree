@@ -1,10 +1,22 @@
 export type LinkColor = 'red' | 'black'
+export type MutationKind =
+  | 'insert'
+  | 'rotate-left'
+  | 'rotate-right'
+  | 'flip-colors'
+  | 'unknown'
 
 export interface RedBlackNode {
   readonly value: string
   readonly color: LinkColor
   readonly left?: RedBlackNode
   readonly right?: RedBlackNode
+}
+
+export interface Mutation {
+  kind: MutationKind
+  result: RedBlackNode
+  node?: RedBlackNode
 }
 
 export function isRed(n?: RedBlackNode) {
@@ -14,34 +26,42 @@ export function isRed(n?: RedBlackNode) {
 export function* insert(
   value: string,
   root?: RedBlackNode
-): Generator<RedBlackNode> {
-  for (const node of _insert(value, root)) {
-    yield { ...node, color: 'black' }
+): Generator<Mutation> {
+  for (const mutation of _insert(value, root)) {
+    yield { ...mutation, result: { ...mutation.result, color: 'black' } }
   }
 }
 
-function* _insert(value: string, root?: RedBlackNode): Generator<RedBlackNode> {
+function* _insert(value: string, root?: RedBlackNode): Generator<Mutation> {
   if (!root) {
-    yield { value, color: 'red' }
+    yield { kind: 'insert', result: { value, color: 'red' } }
     return
   }
 
   if (root.value > value) {
-    for (const left of _insert(value, root.left))
-      yield (root = { ...root, left })
+    for (const mutation of _insert(value, root.left)) {
+      root = { ...root, left: mutation.result }
+      yield { ...mutation, result: root }
+    }
   } else {
-    for (const right of _insert(value, root.right))
-      yield (root = { ...root, right })
+    for (const mutation of _insert(value, root.right)) {
+      root = { ...root, right: mutation.result }
+      yield { ...mutation, result: root }
+    }
   }
 
-  const needsRotation =
-    isRed(root.right) || (isRed(root.left) && isRed(root.left?.left))
-
-  if (needsRotation) {
-    if (isRed(root.right) && !isRed(root.left)) yield (root = rotateLeft(root))
-    if (isRed(root.left) && isRed(root.left?.left))
-      yield (root = rotateRight(root))
-    if (isRed(root.left) && isRed(root.right)) yield (root = flipColors(root))
+  if (isRed(root.right) && !isRed(root.left)) {
+    root = rotateLeft(root)
+    yield { kind: 'rotate-left', result: root }
+  }
+  if (isRed(root.left) && isRed(root.left?.left)) {
+    root = rotateRight(root)
+    yield { kind: 'rotate-right', result: root }
+  }
+  if (isRed(root.left) && isRed(root.right)) {
+    const node = root
+    root = flipColors(root)
+    yield { kind: 'flip-colors', node, result: root }
   }
 }
 
