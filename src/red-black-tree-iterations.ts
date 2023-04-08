@@ -15,52 +15,38 @@ export function* insert(
   value: string,
   root?: RedBlackNode
 ): Generator<RedBlackNode> {
-  const result = _insert(value, root)
-  yield result.root
-  if (result.rotation) yield { ...result.rotation(), color: 'black' }
+  for (const node of _insert(value, root)) {
+    yield { ...node, color: 'black' }
+  }
 }
 
-type Result = {
-  root: RedBlackNode
-  rotation?: () => RedBlackNode
-}
-
-type TransformFn = (() => RedBlackNode) | undefined
-
-function _insert(value: string, root?: RedBlackNode): Result {
-  if (!root) return { root: { value, color: 'red' }, rotation: undefined }
-
-  let leftRotation: TransformFn
-  let rightRotation: TransformFn
+function* _insert(value: string, root?: RedBlackNode): Generator<RedBlackNode> {
+  if (!root) {
+    yield { value, color: 'red' }
+    return
+  }
 
   if (root.value > value) {
-    const result = _insert(value, root.left)
-    root = { ...root, left: result.root }
-    leftRotation = result.rotation
+    for (const left of _insert(value, root.left)) {
+      root = { ...root, left }
+      yield root
+    }
   } else {
-    const result = _insert(value, root.right)
-    root = { ...root, right: result.root }
-    rightRotation = result.rotation
+    for (const right of _insert(value, root.right)) {
+      root = { ...root, right }
+      yield root
+    }
   }
 
   const needsRotation =
-    leftRotation ||
-    rightRotation ||
-    isRed(root.right) ||
-    (isRed(root.left) && isRed(root.left?.left))
-  if (!needsRotation) return { root, rotation: undefined }
-  else {
-    let r = root
-    const rotation = () => {
-      if (leftRotation) r = { ...r, left: leftRotation() }
-      if (rightRotation) r = { ...r, right: rightRotation() }
+    isRed(root.right) || (isRed(root.left) && isRed(root.left?.left))
 
-      if (isRed(r.right) && !isRed(r.left)) r = rotateLeft(r)
-      if (isRed(r.left) && isRed(r.left?.left)) r = rotateRight(r)
-      if (isRed(r.left) && isRed(r.right)) r = flipColors(r)
-      return r
-    }
-    return { root, rotation }
+  if (needsRotation) {
+    let r = root
+    if (isRed(r.right) && !isRed(r.left)) r = rotateLeft(r)
+    if (isRed(r.left) && isRed(r.left?.left)) r = rotateRight(r)
+    if (isRed(r.left) && isRed(r.right)) r = flipColors(r)
+    yield r
   }
 }
 
