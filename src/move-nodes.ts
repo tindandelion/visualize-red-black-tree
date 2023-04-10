@@ -1,15 +1,67 @@
-import { MoveNodeTransition } from './transitions'
-import { VisualNode } from './tree-visualization'
+import { IntervalTransition } from './transitions'
+import { Point } from './tree-visualization'
 
-export function moveNodes(startTree: VisualNode, endTree: VisualNode) {
-  const result: MoveNodeTransition[] = []
+export type MovableNode = {
+  value: string
+  position: Point
+  left?: MovableNode
+  right?: MovableNode
+}
 
-  function recur(startNode: VisualNode, endNode: VisualNode) {
-    result.push(new MoveNodeTransition(startNode, endNode.position))
-    if (startNode.left && endNode.left) recur(startNode.left, endNode.left)
-    if (startNode.right && endNode.right) recur(startNode.right, endNode.right)
+export class MoveNodeTransition extends IntervalTransition {
+  static readonly interval = 1000
+  private readonly startPosition: Point
+
+  constructor(
+    private readonly node: MovableNode,
+    private readonly destPosition: Point
+  ) {
+    super(MoveNodeTransition.interval)
+    this.startPosition = { ...node.position }
   }
 
-  recur(startTree, endTree)
-  return result
+  protected doUpdate(): void {
+    const currentPosition = {
+      x:
+        this.startPosition.x +
+        ((this.destPosition.x - this.startPosition.x) / this.interval) *
+          this.timeDelta,
+      y:
+        this.startPosition.y +
+        ((this.destPosition.y - this.startPosition.y) / this.interval) *
+          this.timeDelta,
+    }
+    this.node.position = currentPosition
+  }
+
+  toString() {
+    return [
+      'Move ',
+      this.node.value,
+      ': ',
+      this.pointToString(this.startPosition),
+      ' -> ',
+      this.pointToString(this.destPosition),
+    ].join('')
+  }
+
+  private pointToString(pt: Point) {
+    return `(${pt.x},${pt.y})`
+  }
+}
+
+export function moveNodes(startTree: MovableNode, endTree: MovableNode) {
+  function recur(
+    acc: MoveNodeTransition[],
+    startNode: MovableNode,
+    endNode: MovableNode
+  ) {
+    acc.push(new MoveNodeTransition(startNode, endNode.position))
+    if (startNode.left && endNode.left) recur(acc, startNode.left, endNode.left)
+    if (startNode.right && endNode.right)
+      recur(acc, startNode.right, endNode.right)
+    return acc
+  }
+
+  return recur([], startTree, endTree)
 }

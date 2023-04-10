@@ -1,4 +1,4 @@
-import { MoveNodeTransition } from '../transitions'
+import { MoveNodeTransition } from '../move-nodes'
 import { VisualNode } from '../tree-visualization'
 
 describe('MoveNodeTransition', () => {

@@ -1,4 +1,4 @@
-import { Point, VisualNode } from './tree-visualization'
+import { Point } from './tree-visualization'
 
 export interface VisualizationTransition {
   readonly isFinished: boolean
@@ -37,48 +37,6 @@ export class VisualizationDelay extends IntervalTransition {
 
   constructor(delay: number = VisualizationDelay.defaultDelay) {
     super(delay)
-  }
-}
-
-export class MoveNodeTransition extends IntervalTransition {
-  static readonly interval = 1000
-  private readonly startPosition: Point
-
-  constructor(
-    private readonly node: VisualNode,
-    private readonly destPosition: Point
-  ) {
-    super(MoveNodeTransition.interval)
-    this.startPosition = { ...node.position }
-  }
-
-  protected doUpdate(): void {
-    const currentPosition = {
-      x:
-        this.startPosition.x +
-        ((this.destPosition.x - this.startPosition.x) / this.interval) *
-          this.timeDelta,
-      y:
-        this.startPosition.y +
-        ((this.destPosition.y - this.startPosition.y) / this.interval) *
-          this.timeDelta,
-    }
-    this.node.position = currentPosition
-  }
-
-  toString() {
-    return [
-      'Move ',
-      this.node.value,
-      ': ',
-      this.pointToString(this.startPosition),
-      ' -> ',
-      this.pointToString(this.destPosition),
-    ].join('')
-  }
-
-  private pointToString(pt: Point) {
-    return `(${pt.x},${pt.y})`
   }
 }
 

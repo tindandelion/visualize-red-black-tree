@@ -1,5 +1,5 @@
 import p5 from 'p5'
-import { isRed, LinkColor, RedBlackNode } from './red-black-tree-construction'
+import { LinkColor, RedBlackNode } from './red-black-tree-construction'
 import { NodePosition, TreeLayout } from './tidy-layout'
 
 export type Point = { x: number; y: number }
@@ -65,7 +65,7 @@ export class VisualNode {
   }
 
   private drawOutline(canvas: p5) {
-    if (isRed(this)) {
+    if (this.color === 'red') {
       canvas.stroke(palette.redNodeColor)
       canvas.strokeWeight(2)
     }

@@ -1,28 +1,24 @@
-import { moveNodes } from '../move-nodes'
+import { MovableNode, moveNodes } from '../move-nodes'
 import { VisualizationTransition } from '../transitions'
-import { VisualNode } from '../tree-visualization'
 
 describe('Node movement animations', () => {
   it('creates animations for each node', () => {
-    const startTree: VisualNode = {
+    const startTree: MovableNode = {
       value: 'D',
-      color: 'black',
       position: { x: 100, y: 100 },
-      left: { value: 'C', color: 'black', position: { x: 50, y: 200 } },
-      right: { value: 'E', color: 'black', position: { x: 150, y: 200 } },
+      left: { value: 'C', position: { x: 50, y: 200 } },
+      right: { value: 'E', position: { x: 150, y: 200 } },
     }
 
-    const endTree: VisualNode = {
+    const endTree: MovableNode = {
       value: 'D',
-      color: 'black',
       position: { x: 120, y: 50 },
       left: {
         value: 'C',
-        color: 'black',
         position: { x: 70, y: 150 },
-        left: { value: 'A', color: 'black', position: { x: 50, y: 200 } },
+        left: { value: 'A', position: { x: 50, y: 200 } },
       },
-      right: { value: 'E', color: 'black', position: { x: 170, y: 150 } },
+      right: { value: 'E', position: { x: 170, y: 150 } },
     }
 
     const animations = moveNodes(startTree, endTree)
