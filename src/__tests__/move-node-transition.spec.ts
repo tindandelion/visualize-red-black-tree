@@ -1,18 +1,17 @@
-import { MoveNodeTransition } from '../move-nodes'
-import { VisualNode } from '../tree-visualization'
+import { MovableNode, MoveNodeTransition } from '../move-nodes'
 
 describe('MoveNodeTransition', () => {
   const startPosition = { x: 100, y: 100 }
   const endPosition = { x: 200, y: 300 }
 
   it('has a string representation for debugging', () => {
-    const node = new VisualNode('X', 'black', startPosition)
+    const node: MovableNode = { value: 'X', position: startPosition }
     const transition = new MoveNodeTransition(node, endPosition)
     expect(transition.toString()).toEqual('Move X: (100,100) -> (200,300)')
   })
 
   it('moves the node to dest position', () => {
-    const node = new VisualNode('X', 'black', startPosition)
+    const node: MovableNode = { value: 'X', position: startPosition }
     const transition = new MoveNodeTransition(node, endPosition)
 
     transition.update(0)

@@ -1,5 +1,5 @@
 import p5 from 'p5'
-import { LinkColor, RedBlackNode } from './red-black-tree-construction'
+import { RedBlackNode, isRed } from './red-black-tree-construction'
 import { NodePosition, TreeLayout } from './tidy-layout'
 
 export type Point = { x: number; y: number }
@@ -50,10 +50,9 @@ export class TightNodePositioner {
   }
 }
 
-export class VisualNode {
+class VisualNode {
   constructor(
-    readonly value: string,
-    readonly color: LinkColor,
+    readonly node: RedBlackNode,
     public position: Point,
     readonly left?: VisualNode,
     readonly right?: VisualNode
@@ -64,8 +63,12 @@ export class VisualNode {
     this.drawText(canvas)
   }
 
+  get value() {
+    return this.node.value
+  }
+
   private drawOutline(canvas: p5) {
-    if (this.color === 'red') {
+    if (isRed(this.node)) {
       canvas.stroke(palette.redNodeColor)
       canvas.strokeWeight(2)
     }
@@ -75,7 +78,7 @@ export class VisualNode {
 
   private drawText(canvas: p5) {
     canvas.textAlign('center', 'center')
-    canvas.text(this.value, this.position.x, this.position.y)
+    canvas.text(this.node.value, this.position.x, this.position.y)
   }
 }
 
@@ -126,7 +129,7 @@ export class TreeVisualization {
     const position = this.nodePositioner.placeOnCanvas(
       this.layout.getNodePosition(node)
     )
-    return new VisualNode(node.value, node.color, position, left, right)
+    return new VisualNode(node, position, left, right)
   }
 
   private drawTreeNode(visual: VisualNode, parentCenter?: Point) {

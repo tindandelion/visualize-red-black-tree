@@ -1,5 +1,3 @@
-import { Point } from './tree-visualization'
-
 export interface VisualizationTransition {
   readonly isFinished: boolean
   update(timeElapsed: number): void

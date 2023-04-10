@@ -39,6 +39,7 @@ function expandTreeSketch(p5: P5) {
       if (updatedVisualization.isOversized) startAnimation()
       else
         transition = createTransition(
+          currentMutation,
           currentVisualization,
           updatedVisualization
         )
@@ -67,22 +68,26 @@ function expandTreeSketch(p5: P5) {
     return String.fromCharCode(Math.floor(Math.random() * 26) + 65)
   }
 
-  function createTransition(
-    current: TreeVisualization,
-    updated: TreeVisualization
-  ) {
-    if (!current.visualRoot || !updated.visualRoot) return FinishedTransition
-
-    const moveTransitions = moveNodes(current.visualRoot, updated.visualRoot)
-    return new TransitionSequence([
-      new VisualizationDelay(500),
-      new ParallelTransition([...moveTransitions]),
-    ])
-  }
-
   function visualizeTree(tree: RedBlackNode): TreeVisualization {
     return new TreeVisualization(p5, tidyLayout(tree), tree)
   }
+}
+
+function createTransition(
+  mutation: Mutation,
+  current: TreeVisualization,
+  updated: TreeVisualization
+) {
+  if (!current.visualRoot || !updated.visualRoot) return FinishedTransition
+
+  let transition: VisualizationTransition = FinishedTransition
+
+  if (mutation.kind === 'insert') {
+    const moveTransitions = moveNodes(current.visualRoot, updated.visualRoot)
+    transition = new ParallelTransition(moveTransitions)
+  }
+
+  return new TransitionSequence([new VisualizationDelay(500), transition])
 }
 
 new P5(expandTreeSketch, element)
