@@ -22,7 +22,7 @@ function expandTreeSketch(p5: P5) {
   let mutations: Mutation[] = []
   let currentMutation: Mutation
   let currentVisualization: TreeVisualization
-  let updatedVisualization: TreeVisualization
+  let updatedVisualization: TreeVisualization | undefined
   let transition: VisualizationTransition = FinishedTransition
 
   p5.setup = () => {
@@ -32,8 +32,19 @@ function expandTreeSketch(p5: P5) {
   }
 
   p5.draw = () => {
-    if (transition.isFinished) {
+    transition.update(p5.millis())
+    clearCanvas(p5)
+    currentVisualization.draw()
+
+    if (!transition.isFinished) return
+
+    if (updatedVisualization) {
       currentVisualization = updatedVisualization
+      updatedVisualization = undefined
+      transition = FinishedTransition
+      clearCanvas(p5)
+      currentVisualization.draw()
+    } else {
       currentMutation = nextMutationToVisualize()
       updatedVisualization = visualizeTree(currentMutation.result)
       if (updatedVisualization.isOversized) startAnimation()
@@ -44,16 +55,12 @@ function expandTreeSketch(p5: P5) {
           updatedVisualization
         )
     }
-    transition.update(p5.millis())
-    clearCanvas(p5)
-    currentVisualization.draw()
   }
 
   function startAnimation() {
     mutations = [...insert(randomChar())]
     currentMutation = nextMutationToVisualize()
     currentVisualization = visualizeTree(currentMutation.result)
-    updatedVisualization = currentVisualization
     transition = FinishedTransition
   }
 

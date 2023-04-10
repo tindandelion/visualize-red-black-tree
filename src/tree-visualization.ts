@@ -107,6 +107,19 @@ export class TreeVisualization {
     this.visualRoot = this.buildVisualTree(root)
   }
 
+  getVisualNode(node: RedBlackNode) {
+    function find(
+      root: VisualNode | undefined,
+      target: RedBlackNode
+    ): VisualNode | undefined {
+      if (!root) return undefined
+      if (root.node == target) return root
+      return find(root.left, target) ?? find(root.right, target)
+    }
+
+    return find(this.visualRoot, node)
+  }
+
   draw() {
     if (!this.visualRoot) return
     this.drawSubTree(this.visualRoot)
