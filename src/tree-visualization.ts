@@ -51,6 +51,8 @@ export class TightNodePositioner {
 }
 
 class VisualNode {
+  backgroundColor = palette.nodeFillColor
+
   constructor(
     readonly node: RedBlackNode,
     public position: Point,
@@ -72,7 +74,7 @@ class VisualNode {
       canvas.stroke(palette.redNodeColor)
       canvas.strokeWeight(2)
     }
-    canvas.fill(palette.nodeFillColor)
+    canvas.fill(this.backgroundColor)
     canvas.circle(this.position.x, this.position.y, 40)
   }
 

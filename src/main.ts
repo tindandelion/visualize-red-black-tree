@@ -11,6 +11,7 @@ import {
 } from './transitions'
 import { moveNodes } from './move-nodes'
 import { Mutation, RedBlackNode, insert } from './red-black-tree-construction'
+import { HighlightNode } from './highlight-node'
 
 const element = document.querySelector<HTMLDivElement>('#app')!
 
@@ -61,6 +62,7 @@ function expandTreeSketch(p5: P5) {
     mutations = [...insert(randomChar())]
     currentMutation = nextMutationToVisualize()
     currentVisualization = visualizeTree(currentMutation.result)
+    updatedVisualization = undefined
     transition = FinishedTransition
   }
 
@@ -92,6 +94,9 @@ function createTransition(
   if (mutation.kind === 'insert') {
     const moveTransitions = moveNodes(current.visualRoot, updated.visualRoot)
     transition = new ParallelTransition(moveTransitions)
+  } else if (mutation.kind === 'flip-colors') {
+    const visual = current.getVisualNode(mutation.node!)
+    if (visual) transition = new HighlightNode(visual)
   }
 
   return new TransitionSequence([new VisualizationDelay(500), transition])
