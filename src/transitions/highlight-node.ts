@@ -1,4 +1,4 @@
-import { IntervalTransition } from './transitions'
+import { IntervalTransition } from './base-transitions'
 
 type Highlightable = {
   backgroundColor: string

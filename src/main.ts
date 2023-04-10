@@ -8,10 +8,10 @@ import {
   FinishedTransition,
   TransitionSequence,
   ParallelTransition,
-} from './transitions'
-import { moveNodes } from './move-nodes'
+} from './transitions/base-transitions'
+import { expandTree } from './transitions/expand-tree'
 import { Mutation, RedBlackNode, insert } from './red-black-tree-construction'
-import { HighlightNode } from './highlight-node'
+import { HighlightNode } from './transitions/highlight-node'
 
 const element = document.querySelector<HTMLDivElement>('#app')!
 
@@ -92,8 +92,8 @@ function createTransition(
   let transition: VisualizationTransition = FinishedTransition
 
   if (mutation.kind === 'insert') {
-    const moveTransitions = moveNodes(current.visualRoot, updated.visualRoot)
-    transition = new ParallelTransition(moveTransitions)
+    const expandTransitions = expandTree(current.visualRoot, updated.visualRoot)
+    transition = new ParallelTransition(expandTransitions)
   } else if (mutation.kind === 'flip-colors') {
     const visual = current.getVisualNode(mutation.node!)
     if (visual) transition = new HighlightNode(visual)

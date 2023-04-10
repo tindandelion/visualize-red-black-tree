@@ -1,4 +1,4 @@
-import { IntervalTransition } from '../transitions'
+import { IntervalTransition } from '../transitions/base-transitions'
 
 class TestIntervalTransition extends IntervalTransition {
   protected doUpdate(): void {}

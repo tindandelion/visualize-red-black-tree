@@ -1,5 +1,5 @@
-import { IntervalTransition } from './transitions'
-import { Point } from './tree-visualization'
+import { IntervalTransition } from './base-transitions'
+import { Point } from '../tree-visualization'
 
 export type MovableNode = {
   value: string
@@ -50,7 +50,7 @@ export class MoveNodeTransition extends IntervalTransition {
   }
 }
 
-export function moveNodes(startTree: MovableNode, endTree: MovableNode) {
+export function expandTree(startTree: MovableNode, endTree: MovableNode) {
   function recur(
     acc: MoveNodeTransition[],
     startNode: MovableNode,
