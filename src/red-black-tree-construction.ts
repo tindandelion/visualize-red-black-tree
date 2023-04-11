@@ -59,8 +59,9 @@ function* _insert(value: string, root?: RedBlackNode): Generator<Mutation> {
   }
 
   if (isRed(root.right) && !isRed(root.left)) {
+    const node = root
     root = rotateLeft(root)
-    yield { kind: 'rotate-left', result: root }
+    yield { kind: 'rotate-left', node, result: root }
   }
   if (isRed(root.left) && isRed(root.left?.left)) {
     root = rotateRight(root)

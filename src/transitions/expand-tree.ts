@@ -1,19 +1,12 @@
-import { IntervalTransition } from './base-transitions'
+import { IntervalTransition, PositionedNode } from './base-transitions'
 import { Point } from '../tree-visualization'
-
-export type MovableNode = {
-  value: string
-  position: Point
-  left?: MovableNode
-  right?: MovableNode
-}
 
 export class MoveNodeTransition extends IntervalTransition {
   static readonly interval = 1000
   private readonly startPosition: Point
 
   constructor(
-    private readonly node: MovableNode,
+    private readonly node: PositionedNode,
     private readonly destPosition: Point
   ) {
     super(MoveNodeTransition.interval)
@@ -50,11 +43,11 @@ export class MoveNodeTransition extends IntervalTransition {
   }
 }
 
-export function expandTree(startTree: MovableNode, endTree: MovableNode) {
+export function expandTree(startTree: PositionedNode, endTree: PositionedNode) {
   function recur(
     acc: MoveNodeTransition[],
-    startNode: MovableNode,
-    endNode: MovableNode
+    startNode: PositionedNode,
+    endNode: PositionedNode
   ) {
     acc.push(new MoveNodeTransition(startNode, endNode.position))
     if (startNode.left && endNode.left) recur(acc, startNode.left, endNode.left)

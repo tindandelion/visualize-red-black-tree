@@ -12,6 +12,7 @@ import {
 import { expandTree } from './transitions/expand-tree'
 import { Mutation, RedBlackNode, insert } from './red-black-tree-construction'
 import { HighlightNode } from './transitions/highlight-node'
+import { RotateLeftTransition } from './transitions/rotate-left'
 
 const element = document.querySelector<HTMLDivElement>('#app')!
 
@@ -96,7 +97,10 @@ function createTransition(
     transition = new ParallelTransition(expandTransitions)
   } else if (mutation.kind === 'flip-colors') {
     const visual = current.getVisualNode(mutation.node!)
-    if (visual) transition = new HighlightNode(visual)
+    transition = new HighlightNode(visual)
+  } else if (mutation.kind === 'rotate-left') {
+    const visual = current.getVisualNode(mutation.node!)
+    // transition = new RotateLeftTransition(visual)
   }
 
   return new TransitionSequence([new VisualizationDelay(500), transition])

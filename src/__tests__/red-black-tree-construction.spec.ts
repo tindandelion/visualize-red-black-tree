@@ -32,11 +32,11 @@ describe('Red-black tree construction', () => {
     expect(toString(mutations)).toEqual(['insert H!F'])
   })
 
-  it('inserts a node with a single rotation', () => {
+  it('inserts a node with a single left rotation', () => {
     const root: RedBlackNode = { value: 'H', color: 'black' }
 
     const mutations = [...insert('K', root)]
-    expect(toString(mutations)).toEqual(['insert H!K', 'rotate-left K!H'])
+    expect(toString(mutations)).toEqual(['insert H!K', 'rotate-left(H) K!H'])
   })
 
   it('flips colors and forces root to be black', () => {
@@ -114,7 +114,7 @@ describe('Red-black tree construction', () => {
     expect(toString(mutations)).toEqual([
       'insert R!EC!AM!H!PS',
       'flip-colors(M) R!EC!A!MHPS',
-      'rotate-left R!M!EC!AHPS',
+      'rotate-left(E) R!M!EC!AHPS',
       'rotate-right M!EC!AH!RPS',
       'flip-colors(M) !MEC!AHRPS',
       'blacken-root MEC!AHRPS',
