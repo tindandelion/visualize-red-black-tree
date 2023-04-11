@@ -4,6 +4,7 @@ export type MutationKind =
   | 'rotate-left'
   | 'rotate-right'
   | 'flip-colors'
+  | 'blacken-root'
   | 'unknown'
 
 export interface RedBlackNode {
@@ -27,8 +28,15 @@ export function* insert(
   value: string,
   root?: RedBlackNode
 ): Generator<Mutation> {
+  let finalResult: RedBlackNode | undefined = undefined
+
   for (const mutation of _insert(value, root)) {
-    yield { ...mutation, result: { ...mutation.result, color: 'black' } }
+    yield mutation
+    finalResult = mutation.result
+  }
+
+  if (finalResult && isRed(finalResult)) {
+    yield { kind: 'blacken-root', result: { ...finalResult, color: 'black' } }
   }
 }
 

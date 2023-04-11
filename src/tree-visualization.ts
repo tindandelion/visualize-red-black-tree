@@ -109,7 +109,7 @@ export class TreeVisualization {
     this.visualRoot = this.buildVisualTree(root)
   }
 
-  getVisualNode(node: RedBlackNode) {
+  getVisualNode(node: RedBlackNode): VisualNode {
     function find(
       root: VisualNode | undefined,
       target: RedBlackNode
@@ -119,7 +119,9 @@ export class TreeVisualization {
       return find(root.left, target) ?? find(root.right, target)
     }
 
-    return find(this.visualRoot, node)
+    const result = find(this.visualRoot, node)
+    if (!result) throw new Error('Node not found: ' + node.value)
+    return result
   }
 
   draw() {
