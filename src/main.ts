@@ -60,7 +60,12 @@ function expandTreeSketch(p5: P5) {
   }
 
   function startAnimation() {
-    mutations = [...insert(randomChar())]
+    const initialTree: RedBlackNode = {
+      value: 'F',
+      color: 'black',
+    }
+
+    mutations = [...insert('C', initialTree)]
     currentMutation = nextMutationToVisualize()
     currentVisualization = visualizeTree(currentMutation.result)
     updatedVisualization = undefined

@@ -1,14 +1,20 @@
-import { PositionedNode } from '../transitions/base-transitions'
-import { RotateLeftTransition } from '../transitions/rotate-left'
+import { RotatableNode, RotateLeftTransition } from '../transitions/rotate-left'
 
 describe('Left rotation', () => {
-  it('moves nodes to their final destinations', () => {
-    const root: PositionedNode = {
-      value: 'C',
-      position: { x: 100, y: 100 },
-      right: { value: 'F', position: { x: 150, y: 200 } },
-    }
+  const root: RotatableNode = {
+    position: { x: 100, y: 100 },
+    isDisconnected: false,
+    right: { isDisconnected: false, position: { x: 150, y: 200 } },
+  }
 
+  it('marks root as disconnected', () => {
+    const transition = new RotateLeftTransition(root)
+
+    transition.update(0)
+    expect(root.isDisconnected).toBe(true)
+  })
+
+  it('moves nodes to their final destinations', () => {
     const transition = new RotateLeftTransition(root)
 
     transition.update(0)

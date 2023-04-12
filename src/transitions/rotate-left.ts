@@ -1,16 +1,22 @@
 import { Point } from '../tree-visualization'
-import { IntervalTransition, PositionedNode } from './base-transitions'
+import { IntervalTransition } from './base-transitions'
 
 type Dimension = { dx: number; dy: number }
+
+export type RotatableNode = {
+  position: Point
+  isDisconnected: boolean
+  readonly right?: RotatableNode
+}
 
 export class RotateLeftTransition extends IntervalTransition {
   public static readonly interval = 1000
 
-  private readonly right: PositionedNode
+  private readonly right: RotatableNode
   private rotCenter: Point
   private rotRadius: Dimension
 
-  constructor(private readonly node: PositionedNode) {
+  constructor(private readonly node: RotatableNode) {
     super(RotateLeftTransition.interval)
     if (!this.node.right) throw new Error('The node has no right child')
     this.right = this.node.right
@@ -25,6 +31,8 @@ export class RotateLeftTransition extends IntervalTransition {
     const rightAngle =
       -(Math.PI / (2 * RotateLeftTransition.interval)) * this.timeDelta
     const rootAngle = rightAngle - Math.PI / 2
+
+    this.node.isDisconnected = true
     this.node.position = this.positionAtAngle(rootAngle)
     this.right.position = this.positionAtAngle(rightAngle)
   }

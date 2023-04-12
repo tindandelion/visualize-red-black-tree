@@ -53,6 +53,8 @@ export class TightNodePositioner {
 class VisualNode {
   backgroundColor = palette.nodeFillColor
 
+  isDisconnected: boolean = false
+
   constructor(
     readonly node: RedBlackNode,
     public position: Point,
@@ -60,13 +62,27 @@ class VisualNode {
     readonly right?: VisualNode
   ) {}
 
-  draw(canvas: p5) {
-    preserveSettings(canvas, () => this.drawOutline(canvas))
-    this.drawText(canvas)
+  draw(canvas: p5, parentCenter?: Point) {
+    preserveSettings(canvas, () => {
+      canvas.stroke(palette.outlineColor)
+      if (parentCenter && !this.isDisconnected)
+        this.connectToParent(canvas, parentCenter)
+      preserveSettings(canvas, () => this.drawOutline(canvas))
+      this.drawText(canvas)
+    })
   }
 
   get value() {
     return this.node.value
+  }
+
+  private connectToParent(canvas: p5, parentCenter: Point) {
+    canvas.line(
+      this.position.x,
+      this.position.y,
+      parentCenter.x,
+      parentCenter.y
+    )
   }
 
   private drawOutline(canvas: p5) {
@@ -149,21 +165,9 @@ export class TreeVisualization {
     return new VisualNode(node, position, left, right)
   }
 
-  private drawTreeNode(visual: VisualNode, parentCenter?: Point) {
-    preserveSettings(this.canvas, () => {
-      this.canvas.stroke(palette.outlineColor)
-      if (parentCenter) this.connectNodes(visual.position, parentCenter)
-      visual.draw(this.canvas)
-    })
-  }
-
-  private connectNodes(nodeCenter: Point, parentCenter: Point) {
-    this.canvas.line(nodeCenter.x, nodeCenter.y, parentCenter.x, parentCenter.y)
-  }
-
   private drawSubTree(visual: VisualNode, parentCenter?: Point) {
     if (visual.left) this.drawSubTree(visual.left, visual.position)
     if (visual.right) this.drawSubTree(visual.right, visual.position)
-    this.drawTreeNode(visual, parentCenter)
+    visual.draw(this.canvas, parentCenter)
   }
 }
