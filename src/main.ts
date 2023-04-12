@@ -14,73 +14,63 @@ import { Mutation, RedBlackNode, insert } from './red-black-tree-construction'
 import { HighlightNode } from './transitions/highlight-node'
 import { RotateTransition } from './transitions/rotations'
 
-const element = document.querySelector<HTMLDivElement>('#app')!
-
-function clearCanvas(p5: P5) {
-  p5.background('#fdf6e3')
+function randomChar() {
+  return String.fromCharCode(Math.floor(Math.random() * 26) + 65)
 }
 
 function expandTreeSketch(p5: P5) {
-  let mutations: Mutation[] = []
+  let mutationsToVisualize: Mutation[] = []
   let currentMutation: Mutation
   let currentVisualization: TreeVisualization
-  let updatedVisualization: TreeVisualization | undefined
+  let nextVisualization: TreeVisualization | undefined
   let transition: VisualizationTransition = FinishedTransition
 
   p5.setup = () => {
     p5.createCanvas(element.clientWidth, element.clientHeight)
-    clearCanvas(p5)
     startAnimation()
   }
 
   p5.draw = () => {
     transition.update(p5.millis())
-    clearCanvas(p5)
-    currentVisualization.draw()
+    draw(currentVisualization)
 
     if (!transition.isFinished) return
 
-    if (updatedVisualization) {
-      currentVisualization = updatedVisualization
-      updatedVisualization = undefined
+    if (nextVisualization) {
+      currentVisualization = nextVisualization
+      nextVisualization = undefined
       transition = FinishedTransition
-      clearCanvas(p5)
-      currentVisualization.draw()
     } else {
       currentMutation = nextMutationToVisualize()
-      updatedVisualization = visualizeTree(currentMutation.result)
-      if (updatedVisualization.isOversized) startAnimation()
+      nextVisualization = visualizeTree(currentMutation.result)
+      if (nextVisualization.isOversized) startAnimation()
       else
         transition = createTransition(
           currentMutation,
           currentVisualization,
-          updatedVisualization
+          nextVisualization
         )
     }
   }
 
-  function startAnimation() {
-    const initialTree: RedBlackNode = {
-      value: 'F',
-      color: 'black',
-    }
+  function draw(v: TreeVisualization) {
+    p5.background('#fdf6e3')
+    v.draw()
+  }
 
-    mutations = [...insert('C', initialTree)]
+  function startAnimation() {
+    mutationsToVisualize = [...insert(randomChar())]
     currentMutation = nextMutationToVisualize()
     currentVisualization = visualizeTree(currentMutation.result)
-    updatedVisualization = undefined
+    nextVisualization = undefined
     transition = FinishedTransition
   }
 
   function nextMutationToVisualize() {
-    if (mutations.length === 0)
-      mutations = [...insert(randomChar(), currentMutation.result)]
+    if (mutationsToVisualize.length === 0)
+      mutationsToVisualize = [...insert(randomChar(), currentMutation.result)]
 
-    return mutations.shift()!
-  }
-
-  function randomChar() {
-    return String.fromCharCode(Math.floor(Math.random() * 26) + 65)
+    return mutationsToVisualize.shift()!
   }
 
   function visualizeTree(tree: RedBlackNode): TreeVisualization {
@@ -122,4 +112,5 @@ function expandTreeSketch(p5: P5) {
   }
 }
 
+const element = document.querySelector<HTMLDivElement>('#app')!
 new P5(expandTreeSketch, element)
