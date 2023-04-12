@@ -1,16 +1,24 @@
 import { IntervalTransition } from './base-transitions'
 
+type Color = unknown
+
 type Highlightable = {
-  backgroundColor: string
+  backgroundColor: Color
+}
+
+export interface ColorInterpolator {
+  (startColor: Color, amount: number): Color
 }
 
 export class HighlightNode extends IntervalTransition {
-  private static readonly interval = 1000
-  private static readonly highlightColor = '#dc322f'
+  private static readonly interval = 500
 
-  private readonly originalBackground: string
+  private readonly originalBackground: Color
 
-  constructor(private readonly node: Highlightable) {
+  constructor(
+    private readonly node: Highlightable,
+    private readonly interpolator: ColorInterpolator
+  ) {
     super(HighlightNode.interval)
     this.originalBackground = node.backgroundColor
   }
@@ -18,8 +26,15 @@ export class HighlightNode extends IntervalTransition {
   protected doUpdate(): void {
     const currentBackground = this.isFinished
       ? this.originalBackground
-      : HighlightNode.highlightColor
+      : this.interpolateColor()
 
     this.node.backgroundColor = currentBackground
+  }
+
+  private interpolateColor() {
+    return this.interpolator(
+      this.originalBackground,
+      this.timeDelta / this.interval
+    )
   }
 }
