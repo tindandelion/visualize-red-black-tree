@@ -25,12 +25,12 @@ export function isRed(n?: RedBlackNode) {
 }
 
 export function* insert(
-  value: string,
+  nodeToInsert: RedBlackNode,
   root?: RedBlackNode
 ): Generator<Mutation> {
   let finalResult: RedBlackNode | undefined = undefined
 
-  for (const mutation of _insert(value, root)) {
+  for (const mutation of _insert(nodeToInsert, root)) {
     yield mutation
     finalResult = mutation.result
   }
@@ -40,19 +40,22 @@ export function* insert(
   }
 }
 
-function* _insert(value: string, root?: RedBlackNode): Generator<Mutation> {
+function* _insert(
+  node: RedBlackNode,
+  root?: RedBlackNode
+): Generator<Mutation> {
   if (!root) {
-    yield { kind: 'insert', result: { value, color: 'red' } }
+    yield { kind: 'insert', result: { ...node, color: 'red' } }
     return
   }
 
-  if (root.value > value) {
-    for (const mutation of _insert(value, root.left)) {
+  if (root.value > node.value) {
+    for (const mutation of _insert(node, root.left)) {
       root = { ...root, left: mutation.result }
       yield { ...mutation, result: root }
     }
   } else {
-    for (const mutation of _insert(value, root.right)) {
+    for (const mutation of _insert(node, root.right)) {
       root = { ...root, right: mutation.result }
       yield { ...mutation, result: root }
     }

@@ -58,8 +58,12 @@ function expandTreeSketch(p5: P5) {
     v.draw()
   }
 
+  function newNode(value: string): RedBlackNode {
+    return { value, color: 'red' }
+  }
+
   function startAnimation() {
-    mutationsToVisualize = [...insert(randomChar())]
+    mutationsToVisualize = [...insert(newNode(randomChar()))]
     currentMutation = nextMutationToVisualize()
     currentVisualization = visualizeTree(currentMutation.result)
     nextVisualization = undefined
@@ -68,7 +72,9 @@ function expandTreeSketch(p5: P5) {
 
   function nextMutationToVisualize() {
     if (mutationsToVisualize.length === 0)
-      mutationsToVisualize = [...insert(randomChar(), currentMutation.result)]
+      mutationsToVisualize = [
+        ...insert(newNode(randomChar()), currentMutation.result),
+      ]
 
     return mutationsToVisualize.shift()!
   }

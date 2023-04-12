@@ -1,8 +1,8 @@
 import {
   RedBlackNode,
   isRed,
-  insert,
   Mutation,
+  insert,
 } from '../red-black-tree-construction'
 
 function toString(mutations: Mutation[]): string[] {
@@ -24,18 +24,22 @@ function toString(mutations: Mutation[]): string[] {
   return mutations.map(mutationToString)
 }
 
+function newNode(value: string): RedBlackNode {
+  return { value, color: 'red' }
+}
+
 describe('Red-black tree construction', () => {
   it('inserts a node without rotations', () => {
     const root: RedBlackNode = { value: 'H', color: 'black' }
 
-    const mutations = [...insert('F', root)]
+    const mutations = [...insert(newNode('F'), root)]
     expect(toString(mutations)).toEqual(['insert H!F'])
   })
 
   it('inserts a node with a single left rotation', () => {
     const root: RedBlackNode = { value: 'H', color: 'black' }
 
-    const mutations = [...insert('K', root)]
+    const mutations = [...insert(newNode('K'), root)]
     expect(toString(mutations)).toEqual(['insert H!K', 'rotate-left(H) K!H'])
   })
 
@@ -46,7 +50,7 @@ describe('Red-black tree construction', () => {
       left: { value: 'A', color: 'red' },
     }
 
-    const mutations = [...insert('F', root)]
+    const mutations = [...insert(newNode('F'), root)]
     expect(toString(mutations)).toEqual([
       'insert C!A!F',
       'flip-colors(C) !CAF',
@@ -61,7 +65,7 @@ describe('Red-black tree construction', () => {
       left: { value: 'F', color: 'red' },
     }
 
-    const mutations = [...insert('B', root)]
+    const mutations = [...insert(newNode('B'), root)]
     expect(toString(mutations)).toEqual([
       'insert H!F!B',
       'rotate-right(H) F!B!H',
@@ -81,7 +85,7 @@ describe('Red-black tree construction', () => {
       },
     }
 
-    const mutations = [...insert('B', root)]
+    const mutations = [...insert(newNode('B'), root)]
     expect(toString(mutations)).toEqual([
       'insert KH!F!B',
       'rotate-right(H) KF!B!H',
@@ -110,7 +114,7 @@ describe('Red-black tree construction', () => {
       right: { value: 'S', color: 'black' },
     }
 
-    const mutations = [...insert('P', tree)]
+    const mutations = [...insert(newNode('P'), tree)]
     expect(toString(mutations)).toEqual([
       'insert R!EC!AM!H!PS',
       'flip-colors(M) R!EC!A!MHPS',
