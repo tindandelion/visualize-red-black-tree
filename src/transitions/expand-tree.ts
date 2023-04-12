@@ -1,5 +1,5 @@
 import { IntervalTransition, PositionedNode } from './base-transitions'
-import { Point } from '../tree-visualization'
+import { Point } from '../visualization/tree-visualization'
 
 export class MoveNodeTransition extends IntervalTransition {
   static readonly interval = 1000

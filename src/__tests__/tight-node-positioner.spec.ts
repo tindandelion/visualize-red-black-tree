@@ -1,4 +1,7 @@
-import { Dimension, TightNodePositioner } from '../tree-visualization'
+import {
+  Dimension,
+  TightNodePositioner,
+} from '../visualization/tree-visualization'
 
 describe('Tight node positioner', () => {
   const canvasSize: Dimension = { dx: 1000, dy: 800 }

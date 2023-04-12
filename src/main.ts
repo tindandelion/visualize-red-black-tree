@@ -1,7 +1,7 @@
 import './style.css'
 import P5 from 'p5'
-import { TreeVisualization } from './tree-visualization'
-import { tidyLayout } from './tidy-layout'
+import { TreeVisualization } from './visualization/tree-visualization'
+import { tidyLayout } from './visualization/tidy-layout'
 import {
   VisualizationTransition,
   VisualizationDelay,

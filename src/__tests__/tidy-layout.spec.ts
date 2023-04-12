@@ -1,4 +1,4 @@
-import { tidyLayout, TreeNodeLinks } from '../tidy-layout'
+import { tidyLayout, TreeNodeLinks } from '../visualization/tidy-layout'
 
 interface TreeNode extends TreeNodeLinks {
   value: number

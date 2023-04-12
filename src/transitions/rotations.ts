@@ -1,4 +1,4 @@
-import { Point } from '../tree-visualization'
+import { Point } from '../visualization/tree-visualization'
 import { IntervalTransition } from './base-transitions'
 
 type Dimension = { dx: number; dy: number }

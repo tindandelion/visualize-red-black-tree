@@ -1,4 +1,4 @@
-import { Point } from '../tree-visualization'
+import { Point } from '../visualization/tree-visualization'
 
 export type PositionedNode = {
   value: string
