@@ -66,7 +66,9 @@ class VisualNode {
     preserveSettings(canvas, () => {
       canvas.stroke(palette.outlineColor)
       if (parentCenter && !this.isDisconnected)
-        this.connectToParent(canvas, parentCenter)
+        preserveSettings(canvas, () =>
+          this.connectToParent(canvas, parentCenter)
+        )
       preserveSettings(canvas, () => this.drawOutline(canvas))
       this.drawText(canvas)
     })
@@ -77,6 +79,10 @@ class VisualNode {
   }
 
   private connectToParent(canvas: p5, parentCenter: Point) {
+    if (isRed(this.node)) {
+      canvas.stroke(palette.redNodeColor)
+      canvas.strokeWeight(2)
+    }
     canvas.line(
       this.position.x,
       this.position.y,
@@ -86,10 +92,6 @@ class VisualNode {
   }
 
   private drawOutline(canvas: p5) {
-    if (isRed(this.node)) {
-      canvas.stroke(palette.redNodeColor)
-      canvas.strokeWeight(2)
-    }
     canvas.fill(this.backgroundColor)
     canvas.circle(this.position.x, this.position.y, 40)
   }
