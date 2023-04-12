@@ -81,7 +81,7 @@ class VisualNode {
   private connectToParent(canvas: p5, parentCenter: Point) {
     if (isRed(this.node)) {
       canvas.stroke(palette.redNodeColor)
-      canvas.strokeWeight(2)
+      canvas.strokeWeight(3)
     }
     canvas.line(
       this.position.x,

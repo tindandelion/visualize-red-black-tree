@@ -13,7 +13,7 @@ export type RotatableNode = {
 type RotationDirection = 'left' | 'right'
 
 export class RotateTransition extends IntervalTransition {
-  public static readonly interval = 5000
+  public static readonly interval = 1000
 
   private readonly child: RotatableNode
   private readonly childToDisconnect: RotatableNode | undefined
