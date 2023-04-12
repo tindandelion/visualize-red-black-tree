@@ -43,13 +43,13 @@ export class RotateTransition extends IntervalTransition {
   }
 
   protected doUpdate(): void {
-    const rightAngle =
+    const childAngle =
       -(Math.PI / (2 * RotateTransition.interval)) * this.timeDelta
-    const rootAngle = rightAngle - Math.PI / 2
+    const rootAngle = childAngle - Math.PI / 2
 
     this.disconnectAffectedNodes()
     this.node.position = this.positionAtAngle(rootAngle)
-    this.child.position = this.positionAtAngle(rightAngle)
+    this.child.position = this.positionAtAngle(childAngle)
   }
 
   private disconnectAffectedNodes() {

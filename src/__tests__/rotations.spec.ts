@@ -1,6 +1,6 @@
 import { RotatableNode, RotateTransition } from '../transitions/rotations'
 
-describe('Left rotation', () => {
+describe(RotateTransition, () => {
   it('marks nodes as disconnected for right rotation', () => {
     const position = { x: 100, y: 100 }
     const root: RotatableNode = {

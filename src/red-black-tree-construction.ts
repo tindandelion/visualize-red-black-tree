@@ -1,11 +1,11 @@
 export type LinkColor = 'red' | 'black'
+
 export type MutationKind =
   | 'insert'
   | 'rotate-left'
   | 'rotate-right'
   | 'flip-colors'
   | 'blacken-root'
-  | 'unknown'
 
 export interface RedBlackNode {
   readonly value: string
