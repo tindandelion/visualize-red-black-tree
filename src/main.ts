@@ -12,7 +12,10 @@ import {
 import { expandTree } from './transitions/expand-tree'
 import { Mutation, RedBlackNode, insert } from './red-black-tree-construction'
 import { HighlightNode } from './transitions/highlight-node'
-import { RotateLeftTransition } from './transitions/rotate-left'
+import {
+  RotateLeftTransition,
+  RotateRightTransition,
+} from './transitions/rotations'
 
 const element = document.querySelector<HTMLDivElement>('#app')!
 
@@ -106,6 +109,9 @@ function createTransition(
   } else if (mutation.kind === 'rotate-left') {
     const visual = current.getVisualNode(mutation.node!)
     transition = new RotateLeftTransition(visual)
+  } else if (mutation.kind === 'rotate-right') {
+    const visual = current.getVisualNode(mutation.node!)
+    transition = new RotateRightTransition(visual)
   }
 
   return new TransitionSequence([new VisualizationDelay(500), transition])

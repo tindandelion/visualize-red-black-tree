@@ -44,3 +44,15 @@ export class RotateLeftTransition extends IntervalTransition {
     }
   }
 }
+
+export class RotateRightTransition extends IntervalTransition {
+  public static readonly interval = 1000
+
+  constructor(private readonly node: RotatableNode) {
+    super(RotateRightTransition.interval)
+  }
+
+  protected doUpdate(): void {
+    this.node.isDisconnected = true
+  }
+}
