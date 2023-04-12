@@ -100,7 +100,7 @@ function createTransition(
     transition = new HighlightNode(visual)
   } else if (mutation.kind === 'rotate-left') {
     const visual = current.getVisualNode(mutation.node!)
-    // transition = new RotateLeftTransition(visual)
+    transition = new RotateLeftTransition(visual)
   }
 
   return new TransitionSequence([new VisualizationDelay(500), transition])

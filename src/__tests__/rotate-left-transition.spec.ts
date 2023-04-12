@@ -12,9 +12,10 @@ describe('Left rotation', () => {
     const transition = new RotateLeftTransition(root)
 
     transition.update(0)
+    transition.update(RotateLeftTransition.interval / 2)
     transition.update(RotateLeftTransition.interval)
 
     expect(root.position).toEqual({ x: 50, y: 200 })
-    // expect(root.right?.position).toEqual({ x: 100, y: 100 })
+    expect(root.right?.position).toEqual({ x: 100, y: 100 })
   })
 })
