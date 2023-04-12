@@ -8,14 +8,12 @@ import {
   FinishedTransition,
   TransitionSequence,
   ParallelTransition,
+  PositionedNode,
 } from './transitions/base-transitions'
 import { expandTree } from './transitions/expand-tree'
 import { Mutation, RedBlackNode, insert } from './red-black-tree-construction'
 import { HighlightNode } from './transitions/highlight-node'
-import {
-  RotateLeftTransition,
-  RotateRightTransition,
-} from './transitions/rotations'
+import { RotateTransition } from './transitions/rotations'
 
 const element = document.querySelector<HTMLDivElement>('#app')!
 
@@ -99,7 +97,6 @@ function createTransition(
   if (!current.visualRoot || !updated.visualRoot) return FinishedTransition
 
   let transition: VisualizationTransition = FinishedTransition
-
   if (mutation.kind === 'insert') {
     const expandTransitions = expandTree(current.visualRoot, updated.visualRoot)
     transition = new ParallelTransition(expandTransitions)
@@ -108,10 +105,10 @@ function createTransition(
     transition = new HighlightNode(visual)
   } else if (mutation.kind === 'rotate-left') {
     const visual = current.getVisualNode(mutation.node!)
-    transition = new RotateLeftTransition(visual)
+    transition = new RotateTransition(visual, 'left')
   } else if (mutation.kind === 'rotate-right') {
     const visual = current.getVisualNode(mutation.node!)
-    transition = new RotateRightTransition(visual)
+    transition = new RotateTransition(visual, 'right')
   }
 
   return new TransitionSequence([new VisualizationDelay(500), transition])
