@@ -1,5 +1,8 @@
 import p5 from 'p5'
-import { RedBlackNode, isRed } from '../red-black-tree-construction'
+import {
+  RedBlackNode as _RedBlackNode,
+  isRed,
+} from '../red-black-tree-construction'
 import { NodePosition, TreeLayout } from './tidy-layout'
 
 export type Point = { x: number; y: number }
@@ -10,6 +13,8 @@ const palette = {
   nodeFillColor: '#eee8d5',
   redNodeColor: '#dc322f',
 }
+
+export interface StringTreeNode extends _RedBlackNode<string, StringTreeNode> {}
 
 export class TightNodePositioner {
   public nodeSpacing: number = 70
@@ -56,7 +61,7 @@ class VisualNode {
   isDisconnected: boolean = false
 
   constructor(
-    readonly node: RedBlackNode,
+    readonly node: StringTreeNode,
     public position: Point,
     readonly left?: VisualNode,
     readonly right?: VisualNode
@@ -118,7 +123,7 @@ export class TreeVisualization {
   constructor(
     private readonly canvas: p5,
     private readonly layout: TreeLayout,
-    root: RedBlackNode
+    root: StringTreeNode
   ) {
     this.nodePositioner = new TightNodePositioner(
       { dx: this.canvas.width, dy: this.canvas.height },
@@ -127,10 +132,10 @@ export class TreeVisualization {
     this.visualRoot = this.buildVisualTree(root)
   }
 
-  getVisualNode(node: RedBlackNode): VisualNode {
+  getVisualNode(node: StringTreeNode): VisualNode {
     function find(
       root: VisualNode | undefined,
-      target: RedBlackNode
+      target: StringTreeNode
     ): VisualNode | undefined {
       if (!root) return undefined
       if (root.node == target) return root
@@ -155,7 +160,7 @@ export class TreeVisualization {
   }
 
   private buildVisualTree(
-    node: RedBlackNode | undefined
+    node: StringTreeNode | undefined
   ): VisualNode | undefined {
     if (!node) return undefined
 

@@ -7,28 +7,34 @@ export type MutationKind =
   | 'flip-colors'
   | 'blacken-root'
 
-export interface RedBlackNode {
-  readonly value: string
-  readonly color: LinkColor
-  readonly left?: RedBlackNode
-  readonly right?: RedBlackNode
+export interface TreeNode<Child extends TreeNode<Child>> {
+  left?: Child
+  right?: Child
 }
 
-export interface Mutation {
+export interface RedBlackNode<
+  ValueType = unknown,
+  Child extends RedBlackNode<ValueType, Child> = any
+> extends TreeNode<Child> {
+  value: ValueType
+  color: LinkColor
+}
+
+export interface Mutation<NodeType> {
   kind: MutationKind
-  result: RedBlackNode
-  node?: RedBlackNode
+  result: NodeType
+  node?: NodeType
 }
 
 export function isRed(n?: RedBlackNode) {
   return !!n && n.color === 'red'
 }
 
-export function* insert(
-  nodeToInsert: RedBlackNode,
-  root?: RedBlackNode
-): Generator<Mutation> {
-  let finalResult: RedBlackNode | undefined = undefined
+export function* insert<
+  ValueType,
+  NodeType extends RedBlackNode<ValueType, NodeType>
+>(nodeToInsert: NodeType, root?: NodeType): Generator<Mutation<NodeType>> {
+  let finalResult: NodeType | undefined = undefined
 
   for (const mutation of _insert(nodeToInsert, root)) {
     yield mutation
@@ -40,10 +46,10 @@ export function* insert(
   }
 }
 
-function* _insert(
-  node: RedBlackNode,
-  root?: RedBlackNode
-): Generator<Mutation> {
+function* _insert<
+  ValueType,
+  NodeType extends RedBlackNode<ValueType, NodeType>
+>(node: NodeType, root?: NodeType): Generator<Mutation<NodeType>> {
   if (!root) {
     yield { kind: 'insert', result: { ...node, color: 'red' } }
     return
@@ -78,7 +84,7 @@ function* _insert(
   }
 }
 
-function rotateLeft(node: RedBlackNode): RedBlackNode {
+function rotateLeft<T extends RedBlackNode>(node: T): T {
   const rightChild = node.right
   if (!rightChild || !isRed(rightChild))
     throw new Error('Unable to rotate left')
@@ -100,7 +106,7 @@ function rotateLeft(node: RedBlackNode): RedBlackNode {
   }
 }
 
-function rotateRight(node: RedBlackNode): RedBlackNode {
+function rotateRight<T extends RedBlackNode>(node: T): T {
   const leftChild = node.left
   if (!leftChild || !isRed(leftChild)) throw new Error('Unable to rotate right')
 
@@ -121,7 +127,7 @@ function rotateRight(node: RedBlackNode): RedBlackNode {
   }
 }
 
-function flipColors(node: RedBlackNode): RedBlackNode {
+function flipColors<T extends RedBlackNode>(node: T): T {
   if (!node.left || !node.right)
     throw new Error('No children to flip colors of ' + node.value)
   const canFlip = !isRed(node) && isRed(node.left) && isRed(node.right)

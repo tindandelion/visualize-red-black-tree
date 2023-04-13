@@ -1,12 +1,15 @@
 import {
-  RedBlackNode,
   isRed,
   Mutation,
   insert,
+  LinkColor,
+  RedBlackNode,
 } from '../red-black-tree-construction'
 
-function toString(mutations: Mutation[]): string[] {
-  function nodeToString(node?: RedBlackNode): string {
+type StringNode = RedBlackNode<string, StringNode>
+
+function toString(mutations: Mutation<StringNode>[]): string[] {
+  function nodeToString(node?: StringNode): string {
     if (!node) return ''
     else {
       const nodeValue = (isRed(node) ? '!' : '') + node.value
@@ -14,7 +17,7 @@ function toString(mutations: Mutation[]): string[] {
     }
   }
 
-  function mutationToString(m: Mutation) {
+  function mutationToString(m: Mutation<StringNode>) {
     let result = m.kind
     if (m.node) result += '(' + m.node.value + ')'
     result += ' ' + nodeToString(m.result)
@@ -24,27 +27,27 @@ function toString(mutations: Mutation[]): string[] {
   return mutations.map(mutationToString)
 }
 
-function newNode(value: string): RedBlackNode {
-  return { value, color: 'red' }
+function newNode(value: string, color: LinkColor = 'red'): StringNode {
+  return { value, color }
 }
 
 describe('Red-black tree construction', () => {
   it('inserts a node without rotations', () => {
-    const root: RedBlackNode = { value: 'H', color: 'black' }
+    const root: StringNode = { value: 'H', color: 'black' }
 
     const mutations = [...insert(newNode('F'), root)]
     expect(toString(mutations)).toEqual(['insert H!F'])
   })
 
   it('inserts a node with a single left rotation', () => {
-    const root: RedBlackNode = { value: 'H', color: 'black' }
+    const root: StringNode = { value: 'H', color: 'black' }
 
     const mutations = [...insert(newNode('K'), root)]
     expect(toString(mutations)).toEqual(['insert H!K', 'rotate-left(H) K!H'])
   })
 
   it('flips colors and forces root to be black', () => {
-    const root: RedBlackNode = {
+    const root: StringNode = {
       value: 'C',
       color: 'black',
       left: { value: 'A', color: 'red' },
@@ -59,7 +62,7 @@ describe('Red-black tree construction', () => {
   })
 
   it('inserts a node with a rotation and a flip', () => {
-    const root: RedBlackNode = {
+    const root: StringNode = {
       value: 'H',
       color: 'black',
       left: { value: 'F', color: 'red' },
@@ -75,7 +78,7 @@ describe('Red-black tree construction', () => {
   })
 
   it('applies rotations on deeper levels', () => {
-    const root: RedBlackNode = {
+    const root: StringNode = {
       value: 'K',
       color: 'black',
       left: {
@@ -94,7 +97,7 @@ describe('Red-black tree construction', () => {
   })
 
   it('inserts into a complex tree ', () => {
-    const tree: RedBlackNode = {
+    const tree: StringNode = {
       value: 'R',
       color: 'black',
       left: {
