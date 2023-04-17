@@ -1,8 +1,8 @@
 import './style.css'
 import P5 from 'p5'
 import {
-  StringTreeNode,
   TreeVisualization,
+  VisualNode,
 } from './visualization/tree-visualization'
 import { tidyLayout } from './visualization/tidy-layout'
 import {
@@ -13,7 +13,7 @@ import {
   ParallelTransition,
 } from './transitions/base-transitions'
 import { expandTree } from './transitions/expand-tree'
-import { Mutation, insert } from './red-black-tree-construction'
+import { LinkColor, Mutation, insert } from './red-black-tree-construction'
 import { HighlightNode } from './transitions/highlight-node'
 import { RotateTransition } from './transitions/rotations'
 
@@ -22,8 +22,8 @@ function randomChar() {
 }
 
 function expandTreeSketch(p5: P5) {
-  let mutationsToVisualize: Mutation<StringTreeNode>[] = []
-  let currentMutation: Mutation<StringTreeNode>
+  let mutationsToVisualize: Mutation<VisualNode>[] = []
+  let currentMutation: Mutation<VisualNode>
   let currentVisualization: TreeVisualization
   let nextVisualization: TreeVisualization | undefined
   let transition: VisualizationTransition = FinishedTransition
@@ -61,12 +61,8 @@ function expandTreeSketch(p5: P5) {
     v.draw()
   }
 
-  function newNode(value: string): StringTreeNode {
-    return { value, color: 'red' }
-  }
-
   function startAnimation() {
-    mutationsToVisualize = [...insert(newNode(randomChar()))]
+    mutationsToVisualize = [...insert(VisualNode.make(randomChar()))]
     currentMutation = nextMutationToVisualize()
     currentVisualization = visualizeTree(currentMutation.result)
     nextVisualization = undefined
@@ -76,13 +72,13 @@ function expandTreeSketch(p5: P5) {
   function nextMutationToVisualize() {
     if (mutationsToVisualize.length === 0)
       mutationsToVisualize = [
-        ...insert(newNode(randomChar()), currentMutation.result),
+        ...insert(VisualNode.make(randomChar()), currentMutation.result),
       ]
 
     return mutationsToVisualize.shift()!
   }
 
-  function visualizeTree(tree: StringTreeNode): TreeVisualization {
+  function visualizeTree(tree: VisualNode): TreeVisualization {
     return new TreeVisualization(p5, tidyLayout(tree), tree)
   }
 
@@ -93,7 +89,7 @@ function expandTreeSketch(p5: P5) {
   }
 
   function createTransition(
-    mutation: Mutation<StringTreeNode>,
+    mutation: Mutation<VisualNode>,
     current: TreeVisualization,
     updated: TreeVisualization
   ) {
@@ -107,13 +103,13 @@ function expandTreeSketch(p5: P5) {
       )
       transition = new ParallelTransition(expandTransitions)
     } else if (mutation.kind === 'flip-colors') {
-      const visual = current.getVisualNode(mutation.node!)
+      const visual = current.findNodeById(mutation.node!.id)
       transition = new HighlightNode(visual, nodeHighlightInterpolator)
     } else if (mutation.kind === 'rotate-left') {
-      const visual = current.getVisualNode(mutation.node!)
+      const visual = current.findNodeById(mutation.node!.id)
       transition = new RotateTransition(visual, 'left')
     } else if (mutation.kind === 'rotate-right') {
-      const visual = current.getVisualNode(mutation.node!)
+      const visual = current.findNodeById(mutation.node!.id)
       transition = new RotateTransition(visual, 'right')
     }
 

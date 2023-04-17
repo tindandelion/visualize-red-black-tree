@@ -1,5 +1,7 @@
 import p5 from 'p5'
 import {
+  LinkColor,
+  RedBlackNode,
   RedBlackNode as _RedBlackNode,
   isRed,
 } from '../red-black-tree-construction'
@@ -55,13 +57,20 @@ export class TightNodePositioner {
   }
 }
 
-class VisualNode {
-  backgroundColor = palette.nodeFillColor
-
+export class VisualNode implements RedBlackNode<string, VisualNode> {
+  private static nextId = 0
+  backgroundColor: string = palette.nodeFillColor
   isDisconnected: boolean = false
 
+  public static make(value: string): VisualNode {
+    const nodeId = this.nextId++
+    return new VisualNode(nodeId, value, 'red', { x: 0, y: 0 })
+  }
+
   constructor(
-    readonly node: StringTreeNode,
+    readonly id: number,
+    readonly value: string,
+    readonly color: LinkColor,
     public position: Point,
     readonly left?: VisualNode,
     readonly right?: VisualNode
@@ -79,12 +88,8 @@ class VisualNode {
     })
   }
 
-  get value() {
-    return this.node.value
-  }
-
   private connectToParent(canvas: p5, parentCenter: Point) {
-    if (isRed(this.node)) {
+    if (isRed(this)) {
       canvas.stroke(palette.redNodeColor)
       canvas.strokeWeight(3)
     }
@@ -103,7 +108,7 @@ class VisualNode {
 
   private drawText(canvas: p5) {
     canvas.textAlign('center', 'center')
-    canvas.text(this.node.value, this.position.x, this.position.y)
+    canvas.text(this.value, this.position.x, this.position.y)
   }
 }
 
@@ -123,7 +128,7 @@ export class TreeVisualization {
   constructor(
     private readonly canvas: p5,
     private readonly layout: TreeLayout,
-    root: StringTreeNode
+    root: VisualNode
   ) {
     this.nodePositioner = new TightNodePositioner(
       { dx: this.canvas.width, dy: this.canvas.height },
@@ -132,18 +137,15 @@ export class TreeVisualization {
     this.visualRoot = this.buildVisualTree(root)
   }
 
-  getVisualNode(node: StringTreeNode): VisualNode {
-    function find(
-      root: VisualNode | undefined,
-      target: StringTreeNode
-    ): VisualNode | undefined {
+  findNodeById(nodeId: number): VisualNode {
+    function find(root: VisualNode | undefined): VisualNode | undefined {
       if (!root) return undefined
-      if (root.node == target) return root
-      return find(root.left, target) ?? find(root.right, target)
+      if (root.id === nodeId) return root
+      return find(root.left) ?? find(root.right)
     }
 
-    const result = find(this.visualRoot, node)
-    if (!result) throw new Error('Node not found: ' + node.value)
+    const result = find(this.visualRoot)
+    if (!result) throw new Error('Node not found by id: ' + nodeId)
     return result
   }
 
@@ -160,7 +162,7 @@ export class TreeVisualization {
   }
 
   private buildVisualTree(
-    node: StringTreeNode | undefined
+    node: VisualNode | undefined
   ): VisualNode | undefined {
     if (!node) return undefined
 
@@ -169,7 +171,14 @@ export class TreeVisualization {
     const position = this.nodePositioner.placeOnCanvas(
       this.layout.getNodePosition(node)
     )
-    return new VisualNode(node, position, left, right)
+    return new VisualNode(
+      node.id,
+      node.value,
+      node.color,
+      position,
+      left,
+      right
+    )
   }
 
   private drawSubTree(visual: VisualNode, parentCenter?: Point) {
