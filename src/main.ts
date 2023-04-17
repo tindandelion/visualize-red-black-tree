@@ -13,7 +13,7 @@ import {
   ParallelTransition,
 } from './transitions/base-transitions'
 import { expandTree } from './transitions/expand-tree'
-import { LinkColor, Mutation, insert } from './red-black-tree-construction'
+import { Mutation, insert } from './red-black-tree-construction'
 import { HighlightNode } from './transitions/highlight-node'
 import { RotateTransition } from './transitions/rotations'
 
