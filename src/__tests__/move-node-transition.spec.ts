@@ -1,8 +1,8 @@
+import { expandTree } from '../transitions/expand-tree'
 import {
+  MoveNodeTransition,
   PositionedNode,
-  VisualizationTransition,
-} from '../transitions/base-transitions'
-import { MoveNodeTransition, expandTree } from '../transitions/expand-tree'
+} from '../transitions/move-transition'
 
 describe('MoveNodeTransition', () => {
   const startPosition = { x: 100, y: 100 }
@@ -58,7 +58,7 @@ describe('Expand tree on insertion', () => {
     ])
   })
 
-  function transitionsToString(transitions: VisualizationTransition[]) {
+  function transitionsToString(transitions: MoveNodeTransition[]) {
     return transitions.map((a) => a.toString())
   }
 })

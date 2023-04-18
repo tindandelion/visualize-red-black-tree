@@ -1,12 +1,3 @@
-import { Point } from '../visualization/tree-visualization'
-
-export type PositionedNode = {
-  value: string
-  position: Point
-  left?: PositionedNode
-  right?: PositionedNode
-}
-
 export interface VisualizationTransition {
   readonly isFinished: boolean
   update(timeElapsed: number): void
