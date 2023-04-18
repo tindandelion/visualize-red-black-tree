@@ -1,13 +1,10 @@
+import { TreeNode } from '../red-black-tree-construction'
 import { Point } from '../visualization/tree-visualization'
 import { IntervalTransition } from './base-transitions'
 
-type Dimension = { dx: number; dy: number }
-
-export type RotatableNode = {
+export interface RotatableNode extends TreeNode<RotatableNode> {
   position: Point
   isDisconnected: boolean
-  readonly left?: RotatableNode
-  readonly right?: RotatableNode
 }
 
 type RotationDirection = 'left' | 'right'
@@ -17,8 +14,6 @@ export class RotateTransition extends IntervalTransition {
 
   private readonly child: RotatableNode
   private readonly childToDisconnect: RotatableNode | undefined
-  private rotCenter: Point
-  private rotRadius: Dimension
 
   constructor(
     private readonly node: RotatableNode,
@@ -34,33 +29,14 @@ export class RotateTransition extends IntervalTransition {
       this.child = this.node.left
       this.childToDisconnect = this.child.right
     }
-
-    this.rotCenter = { x: this.node.position.x, y: this.child.position.y }
-    this.rotRadius = {
-      dx: this.child.position.x - this.node.position.x,
-      dy: this.child.position.y - this.node.position.y,
-    }
   }
 
   protected doUpdate(): void {
-    const childAngle =
-      -(Math.PI / (2 * RotateTransition.interval)) * this.timeDelta
-    const rootAngle = childAngle - Math.PI / 2
-
     this.disconnectAffectedNodes()
-    this.node.position = this.positionAtAngle(rootAngle)
-    this.child.position = this.positionAtAngle(childAngle)
   }
 
   private disconnectAffectedNodes() {
     this.node.isDisconnected = true
     if (this.childToDisconnect) this.childToDisconnect.isDisconnected = true
-  }
-
-  private positionAtAngle(angle: number) {
-    return {
-      x: this.rotCenter.x + this.rotRadius.dx * Math.cos(angle),
-      y: this.rotCenter.y + this.rotRadius.dy * Math.sin(angle),
-    }
   }
 }

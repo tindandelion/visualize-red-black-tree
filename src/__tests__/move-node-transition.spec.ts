@@ -1,4 +1,3 @@
-import { expandTree } from '../transitions/expand-tree'
 import {
   MoveNodeTransition,
   PositionedNode,
@@ -27,38 +26,4 @@ describe('MoveNodeTransition', () => {
     transition.update(MoveNodeTransition.interval)
     expect(node.position).toEqual(endPosition)
   })
-})
-
-describe('Expand tree on insertion', () => {
-  it('creates animations for each node', () => {
-    const startTree: PositionedNode = {
-      value: 'D',
-      position: { x: 100, y: 100 },
-      left: { value: 'C', position: { x: 50, y: 200 } },
-      right: { value: 'E', position: { x: 150, y: 200 } },
-    }
-
-    const endTree: PositionedNode = {
-      value: 'D',
-      position: { x: 120, y: 50 },
-      left: {
-        value: 'C',
-        position: { x: 70, y: 150 },
-        left: { value: 'A', position: { x: 50, y: 200 } },
-      },
-      right: { value: 'E', position: { x: 170, y: 150 } },
-    }
-
-    const animations = expandTree(startTree, endTree)
-
-    expect(transitionsToString(animations)).toEqual([
-      'Move D: (100,100) -> (120,50)',
-      'Move C: (50,200) -> (70,150)',
-      'Move E: (150,200) -> (170,150)',
-    ])
-  })
-
-  function transitionsToString(transitions: MoveNodeTransition[]) {
-    return transitions.map((a) => a.toString())
-  }
 })

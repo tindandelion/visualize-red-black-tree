@@ -12,10 +12,10 @@ import {
   TransitionSequence,
   ParallelTransition,
 } from './transitions/base-transitions'
-import { expandTree } from './transitions/expand-tree'
 import { Mutation, insert } from './red-black-tree-construction'
 import { HighlightNode } from './transitions/highlight-node'
 import { RotateTransition } from './transitions/rotations'
+import { rearrangeTreeNodes } from './transitions/rearrange-tree'
 
 function randomChar() {
   return String.fromCharCode(Math.floor(Math.random() * 26) + 65)
@@ -95,24 +95,22 @@ function expandTreeSketch(p5: P5) {
   ) {
     if (!current.visualRoot || !updated.visualRoot) return FinishedTransition
 
-    let transition: VisualizationTransition = FinishedTransition
-    if (mutation.kind === 'insert') {
-      const expandTransitions = expandTree(
-        current.visualRoot,
-        updated.visualRoot
-      )
-      transition = new ParallelTransition(expandTransitions)
-    } else if (mutation.kind === 'flip-colors') {
+    const transitions: VisualizationTransition[] = rearrangeTreeNodes(
+      current.visualRoot,
+      updated.visualRoot
+    )
+
+    if (mutation.kind === 'flip-colors') {
       const visual = current.findNodeById(mutation.node!.id)
-      transition = new HighlightNode(visual, nodeHighlightInterpolator)
+      transitions.push(new HighlightNode(visual, nodeHighlightInterpolator))
     } else if (mutation.kind === 'rotate-left') {
       const visual = current.findNodeById(mutation.node!.id)
-      transition = new RotateTransition(visual, 'left')
+      transitions.push(new RotateTransition(visual, 'left'))
     } else if (mutation.kind === 'rotate-right') {
       const visual = current.findNodeById(mutation.node!.id)
-      transition = new RotateTransition(visual, 'right')
+      transitions.push(new RotateTransition(visual, 'right'))
     }
-
+    const transition = new ParallelTransition(transitions)
     return new TransitionSequence([new VisualizationDelay(500), transition])
   }
 }

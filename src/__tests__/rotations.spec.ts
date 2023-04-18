@@ -51,38 +51,4 @@ describe(RotateTransition, () => {
     expect(root.right?.left?.isDisconnected).toBe(true)
     expect(root.right?.right?.isDisconnected).toBe(false)
   })
-
-  it('rotates nodes left', () => {
-    const root: RotatableNode = {
-      position: { x: 100, y: 100 },
-      isDisconnected: false,
-      right: { isDisconnected: false, position: { x: 150, y: 200 } },
-    }
-
-    const transition = new RotateTransition(root, 'left')
-
-    transition.update(0)
-    transition.update(RotateTransition.interval / 2)
-    transition.update(RotateTransition.interval)
-
-    expect(root.position).toEqual({ x: 50, y: 200 })
-    expect(root.right?.position).toEqual({ x: 100, y: 100 })
-  })
-
-  it('rotates nodes right', () => {
-    const root: RotatableNode = {
-      position: { x: 100, y: 100 },
-      isDisconnected: false,
-      left: { isDisconnected: false, position: { x: 50, y: 200 } },
-    }
-
-    const transition = new RotateTransition(root, 'right')
-
-    transition.update(0)
-    transition.update(RotateTransition.interval / 2)
-    transition.update(RotateTransition.interval)
-
-    expect(root.position).toEqual({ x: 150, y: 200 })
-    expect(root.left?.position).toEqual({ x: 100, y: 100 })
-  })
 })
