@@ -21,9 +21,20 @@ function randomChar() {
   return String.fromCharCode(Math.floor(Math.random() * 26) + 65)
 }
 
+function* generateTree(): Generator<Mutation<VisualNode>> {
+  let mutations = insert(VisualNode.make(randomChar()))
+  while (true) {
+    let tree
+    for (const m of mutations) {
+      yield m
+      tree = m.result
+    }
+    mutations = insert(VisualNode.make(randomChar()), tree)
+  }
+}
+
 function treeConstruction(p5: P5) {
-  let mutationsToVisualize: Mutation<VisualNode>[] = []
-  let currentMutation: Mutation<VisualNode>
+  let mutationGenerator = generateTree()
   let currentVisualization: TreeVisualization
   let nextVisualization: TreeVisualization | undefined
   let transition: VisualizationTransition = FinishedTransition
@@ -44,7 +55,7 @@ function treeConstruction(p5: P5) {
       nextVisualization = undefined
       transition = FinishedTransition
     } else {
-      currentMutation = nextMutationToVisualize()
+      const currentMutation = nextMutation()
       nextVisualization = visualizeTree(currentMutation.result)
       if (nextVisualization.isOversized) startAnimation()
       else
@@ -62,20 +73,15 @@ function treeConstruction(p5: P5) {
   }
 
   function startAnimation() {
-    mutationsToVisualize = [...insert(VisualNode.make(randomChar()))]
-    currentMutation = nextMutationToVisualize()
+    mutationGenerator = generateTree()
+    const currentMutation = nextMutation()
     currentVisualization = visualizeTree(currentMutation.result)
     nextVisualization = undefined
     transition = FinishedTransition
   }
 
-  function nextMutationToVisualize() {
-    if (mutationsToVisualize.length === 0)
-      mutationsToVisualize = [
-        ...insert(VisualNode.make(randomChar()), currentMutation.result),
-      ]
-
-    return mutationsToVisualize.shift()!
+  function nextMutation() {
+    return mutationGenerator.next().value
   }
 
   function visualizeTree(tree: VisualNode): TreeVisualization {
@@ -115,3 +121,7 @@ function treeConstruction(p5: P5) {
 
 const element = document.querySelector<HTMLDivElement>('#app')!
 const p5 = new P5(treeConstruction, element)
+
+new ResizeObserver(([{ contentRect }]) =>
+  p5.resizeCanvas(contentRect.right, contentRect.bottom)
+).observe(element)
