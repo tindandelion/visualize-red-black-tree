@@ -16,8 +16,6 @@ const palette = {
   redNodeColor: '#dc322f',
 }
 
-export interface StringTreeNode extends _RedBlackNode<string, StringTreeNode> {}
-
 export class TightNodePositioner {
   public nodeSpacing: number = 70
   public aspectRatio: number = 0.5
@@ -122,7 +120,7 @@ function preserveSettings(canvas: p5, action: () => void) {
 }
 
 export class TreeVisualization {
-  readonly visualRoot: VisualNode | undefined
+  readonly visualRoot: VisualNode
   private readonly nodePositioner: TightNodePositioner
 
   constructor(
@@ -150,7 +148,6 @@ export class TreeVisualization {
   }
 
   draw() {
-    if (!this.visualRoot) return
     this.drawSubTree(this.visualRoot)
   }
 
@@ -161,13 +158,9 @@ export class TreeVisualization {
     )
   }
 
-  private buildVisualTree(
-    node: VisualNode | undefined
-  ): VisualNode | undefined {
-    if (!node) return undefined
-
-    const left = this.buildVisualTree(node.left)
-    const right = this.buildVisualTree(node.right)
+  private buildVisualTree(node: VisualNode): VisualNode {
+    const left = node.left && this.buildVisualTree(node.left)
+    const right = node.right && this.buildVisualTree(node.right)
     const position = this.nodePositioner.placeOnCanvas(
       this.layout.getNodePosition(node)
     )

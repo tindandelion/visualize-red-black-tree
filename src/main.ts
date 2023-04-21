@@ -21,7 +21,7 @@ function randomChar() {
   return String.fromCharCode(Math.floor(Math.random() * 26) + 65)
 }
 
-function expandTreeSketch(p5: P5) {
+function treeConstruction(p5: P5) {
   let mutationsToVisualize: Mutation<VisualNode>[] = []
   let currentMutation: Mutation<VisualNode>
   let currentVisualization: TreeVisualization
@@ -82,7 +82,7 @@ function expandTreeSketch(p5: P5) {
     return new TreeVisualization(p5, tidyLayout(tree), tree)
   }
 
-  function nodeHighlightInterpolator(startColor: any, amount: number) {
+  function lerpHighlightColor(startColor: any, amount: number) {
     const dest = p5.color('#dc322f')
     const start = p5.color(startColor)
     return p5.lerpColor(start, dest, amount)
@@ -93,8 +93,6 @@ function expandTreeSketch(p5: P5) {
     current: TreeVisualization,
     updated: TreeVisualization
   ) {
-    if (!current.visualRoot || !updated.visualRoot) return FinishedTransition
-
     const transitions: VisualizationTransition[] = rearrangeTreeNodes(
       current.visualRoot,
       updated.visualRoot
@@ -102,7 +100,7 @@ function expandTreeSketch(p5: P5) {
 
     if (mutation.kind === 'flip-colors') {
       const visual = current.findNodeById(mutation.node!.id)
-      transitions.push(new HighlightNode(visual, nodeHighlightInterpolator))
+      transitions.push(new HighlightNode(visual, lerpHighlightColor))
     } else if (mutation.kind === 'rotate-left') {
       const visual = current.findNodeById(mutation.node!.id)
       transitions.push(new RotateTransition(visual, 'left'))
@@ -116,4 +114,4 @@ function expandTreeSketch(p5: P5) {
 }
 
 const element = document.querySelector<HTMLDivElement>('#app')!
-new P5(expandTreeSketch, element)
+const p5 = new P5(treeConstruction, element)
