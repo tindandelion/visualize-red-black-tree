@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     commands:
-      - npm install --force
+      - npm install
 
   build:
     commands:
@@ -14,7 +14,3 @@ artifacts:
   files:
     - '**/*'
   base-directory: dist
-
-cache:
-  paths:
-    - 'node_modules/**/*'
