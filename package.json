@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "build:gh-pages": "tsc && vite build --config build/gh-pages/vite.config.js",
     "build:aws": "tsc && vite build",
-    "deploy": "gh-pages -d dist",
+    "deploy:gh-pages": "gh-pages -d dist",
     "preview": "vite preview",
     "test": "jest"
   },
