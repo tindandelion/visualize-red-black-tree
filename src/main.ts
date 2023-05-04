@@ -41,7 +41,6 @@ class Visualizer {
   private currentVisualization?: TreeVisualization
   private nextVisualization?: TreeVisualization
   private transition: VisualizationTransition = FinishedTransition
-  private insertionComplete = Promise.resolve()
 
   constructor(element: HTMLElement) {
     const sketch = (p5: P5) => {
