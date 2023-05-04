@@ -4,4 +4,14 @@
   top: 0;
   right: 0;
   bottom: 0;
+  display: flex;
+}
+
+#rb-tree {
+  width: 50%;
+}
+
+#bin-tree {
+  width: 50%;
+  background: blue;
 }

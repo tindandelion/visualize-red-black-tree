@@ -33,68 +33,84 @@ function* generateTree(): Generator<Mutation<VisualNode>> {
   }
 }
 
-function treeConstruction(p5: P5) {
-  let mutationGenerator = generateTree()
-  let currentVisualization: TreeVisualization
-  let nextVisualization: TreeVisualization | undefined
-  let transition: VisualizationTransition = FinishedTransition
+function* emptyGenerator() {}
 
-  p5.setup = () => {
-    p5.createCanvas(element.clientWidth, element.clientHeight)
-    startAnimation()
-  }
+class Visualizer {
+  private readonly p5: P5
+  private mutationGenerator: Generator<Mutation<VisualNode>> = emptyGenerator()
+  private currentVisualization?: TreeVisualization
+  private nextVisualization?: TreeVisualization
+  private transition: VisualizationTransition = FinishedTransition
+  private insertionComplete = Promise.resolve()
 
-  p5.draw = () => {
-    transition.update(p5.millis())
-    draw(currentVisualization)
-
-    if (!transition.isFinished) return
-
-    if (nextVisualization) {
-      currentVisualization = nextVisualization
-      nextVisualization = undefined
-      transition = FinishedTransition
-    } else {
-      const currentMutation = nextMutation()
-      nextVisualization = visualizeTree(currentMutation.result)
-      if (nextVisualization.isOversized) startAnimation()
-      else
-        transition = createTransition(
-          currentMutation,
-          currentVisualization,
-          nextVisualization
-        )
+  constructor(element: HTMLElement) {
+    const sketch = (p5: P5) => {
+      p5.setup = () => this.setup(element.clientWidth, element.clientHeight)
+      p5.draw = () => this.draw()
     }
+    this.p5 = new P5(sketch, element)
+
+    new ResizeObserver(([{ contentRect }]) =>
+      this.p5.resizeCanvas(contentRect.right, contentRect.bottom)
+    ).observe(element)
   }
 
-  function draw(v: TreeVisualization) {
-    p5.background('#fdf6e3')
-    v.draw()
+  private setup(width: number, height: number) {
+    this.p5.createCanvas(width, height)
+    this.startAnimation()
   }
 
-  function startAnimation() {
-    mutationGenerator = generateTree()
-    const currentMutation = nextMutation()
-    currentVisualization = visualizeTree(currentMutation.result)
-    nextVisualization = undefined
-    transition = FinishedTransition
+  private draw() {
+    if (!this.currentVisualization) return
+
+    this.updateCurrentVisualization()
+    if (!this.transition.isFinished) return
+
+    if (this.nextVisualization) this.finalizeTransition()
+    else this.generateNextVisualization()
   }
 
-  function nextMutation() {
-    return mutationGenerator.next().value
+  private updateCurrentVisualization() {
+    this.transition.update(this.p5.millis())
+    this.p5.background('#fdf6e3')
+    this.currentVisualization!.draw()
   }
 
-  function visualizeTree(tree: VisualNode): TreeVisualization {
-    return new TreeVisualization(p5, tidyLayout(tree), tree)
+  private finalizeTransition() {
+    this.currentVisualization = this.nextVisualization
+    this.nextVisualization = undefined
+    this.transition = FinishedTransition
   }
 
-  function lerpHighlightColor(startColor: any, amount: number) {
-    const dest = p5.color('#dc322f')
-    const start = p5.color(startColor)
-    return p5.lerpColor(start, dest, amount)
+  private generateNextVisualization() {
+    const mutation = this.nextMutation()
+    this.nextVisualization = this.visualizeTree(mutation.result)
+    if (this.nextVisualization.isOversized) this.startAnimation()
+    else
+      this.transition = this.createTransition(
+        mutation,
+        this.currentVisualization!,
+        this.nextVisualization
+      )
   }
 
-  function createTransition(
+  private startAnimation() {
+    this.mutationGenerator = generateTree()
+    const currentMutation = this.nextMutation()
+    this.currentVisualization = this.visualizeTree(currentMutation.result)
+    this.nextVisualization = undefined
+    this.transition = FinishedTransition
+  }
+
+  private nextMutation() {
+    return this.mutationGenerator.next().value
+  }
+
+  private visualizeTree(tree: VisualNode): TreeVisualization {
+    return new TreeVisualization(this.p5, tidyLayout(tree), tree)
+  }
+
+  private createTransition(
     mutation: Mutation<VisualNode>,
     current: TreeVisualization,
     updated: TreeVisualization
@@ -106,7 +122,9 @@ function treeConstruction(p5: P5) {
 
     if (mutation.kind === 'flip-colors') {
       const visual = current.findNodeById(mutation.node!.id)
-      transitions.push(new HighlightNode(visual, lerpHighlightColor))
+      transitions.push(
+        new HighlightNode(visual, this.lerpHighlightColor.bind(this))
+      )
     } else if (mutation.kind === 'rotate-left') {
       const visual = current.findNodeById(mutation.node!.id)
       transitions.push(new RotateTransition(visual, 'left'))
@@ -117,11 +135,18 @@ function treeConstruction(p5: P5) {
     const transition = new ParallelTransition(transitions)
     return new TransitionSequence([new VisualizationDelay(500), transition])
   }
+
+  private lerpHighlightColor(startColor: any, amount: number) {
+    const dest = this.p5.color('#dc322f')
+    const start = this.p5.color(startColor)
+    return this.p5.lerpColor(start, dest, amount)
+  }
 }
 
-const element = document.querySelector<HTMLDivElement>('#app')!
-const p5 = new P5(treeConstruction, element)
+function createVisualizer(elementId: string) {
+  const element = document.querySelector<HTMLDivElement>(elementId)!
+  return new Visualizer(element)
+}
 
-new ResizeObserver(([{ contentRect }]) =>
-  p5.resizeCanvas(contentRect.right, contentRect.bottom)
-).observe(element)
+createVisualizer('#rb-tree')
+createVisualizer('#bin-tree')
