@@ -1,4 +1,4 @@
-import { TreeNode } from '../red-black-tree-construction'
+import { TreeNode } from '../tree-impl/red-black-tree'
 import { Point } from '../visualization/tree-visualization'
 import { IntervalTransition } from './base-transitions'
 

@@ -4,7 +4,7 @@ import {
   insert,
   LinkColor,
   RedBlackNode,
-} from '../red-black-tree-construction'
+} from '../tree-impl/red-black-tree'
 
 type StringNode = RedBlackNode<string, StringNode>
 

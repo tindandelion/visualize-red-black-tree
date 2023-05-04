@@ -1,11 +1,6 @@
-export type LinkColor = 'red' | 'black'
+import { Mutation } from './common'
 
-export type MutationKind =
-  | 'insert'
-  | 'rotate-left'
-  | 'rotate-right'
-  | 'flip-colors'
-  | 'blacken-root'
+export type LinkColor = 'red' | 'black'
 
 export interface TreeNode<Child extends TreeNode<Child>> {
   left?: Child
@@ -18,12 +13,6 @@ export interface RedBlackNode<
 > extends TreeNode<Child> {
   value: ValueType
   color: LinkColor
-}
-
-export interface Mutation<NodeType> {
-  kind: MutationKind
-  result: NodeType
-  node?: NodeType
 }
 
 export function isRed(n?: RedBlackNode) {

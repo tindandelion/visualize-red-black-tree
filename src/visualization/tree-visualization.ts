@@ -4,7 +4,7 @@ import {
   RedBlackNode,
   RedBlackNode as _RedBlackNode,
   isRed,
-} from '../red-black-tree-construction'
+} from '../tree-impl/red-black-tree'
 import { NodePosition, TreeLayout } from './tidy-layout'
 
 export type Point = { x: number; y: number }
