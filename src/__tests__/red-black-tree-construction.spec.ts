@@ -1,10 +1,5 @@
-import { Mutation } from '../tree-impl/common'
-import {
-  isRed,
-  insert,
-  LinkColor,
-  RedBlackNode,
-} from '../tree-impl/red-black-tree'
+import { LinkColor, Mutation, RedBlackNode } from '../tree-impl/common'
+import { isRed, insert } from '../tree-impl/red-black-tree'
 
 type StringNode = RedBlackNode<string, StringNode>
 

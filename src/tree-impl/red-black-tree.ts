@@ -1,19 +1,4 @@
-import { Mutation } from './common'
-
-export type LinkColor = 'red' | 'black'
-
-export interface TreeNode<Child extends TreeNode<Child>> {
-  left?: Child
-  right?: Child
-}
-
-export interface RedBlackNode<
-  ValueType = unknown,
-  Child extends RedBlackNode<ValueType, Child> = any
-> extends TreeNode<Child> {
-  value: ValueType
-  color: LinkColor
-}
+import { Mutation, RedBlackNode } from './common'
 
 export function isRed(n?: RedBlackNode) {
   return !!n && n.color === 'red'

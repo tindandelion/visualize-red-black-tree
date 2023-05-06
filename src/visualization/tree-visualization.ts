@@ -1,11 +1,7 @@
 import p5 from 'p5'
-import {
-  LinkColor,
-  RedBlackNode,
-  RedBlackNode as _RedBlackNode,
-  isRed,
-} from '../tree-impl/red-black-tree'
+import { isRed } from '../tree-impl/red-black-tree'
 import { NodePosition, TreeLayout } from './tidy-layout'
+import { LinkColor, RedBlackNode } from '../tree-impl/common'
 
 export type Point = { x: number; y: number }
 export type Dimension = { dx: number; dy: number }
