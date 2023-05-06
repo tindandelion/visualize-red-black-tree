@@ -7,10 +7,10 @@ export function isRed(n?: RedBlackNode) {
 export function* insert<
   ValueType,
   NodeType extends RedBlackNode<ValueType, NodeType>
->(nodeToInsert: NodeType, root?: NodeType): Generator<Mutation<NodeType>> {
+>(newNode: NodeType, root?: NodeType): Generator<Mutation<NodeType>> {
   let finalResult: NodeType | undefined = undefined
 
-  for (const mutation of _insert(nodeToInsert, root)) {
+  for (const mutation of _insert(newNode, root)) {
     yield mutation
     finalResult = mutation.result
   }
