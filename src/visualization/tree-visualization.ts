@@ -13,7 +13,7 @@ const palette = {
 }
 
 export class TightNodePositioner {
-  public nodeSpacing: number = 70
+  public nodeSpacing: number = 50
   public aspectRatio: number = 0.5
 
   constructor(
@@ -97,7 +97,7 @@ export class VisualNode implements RedBlackNode<string, VisualNode> {
 
   private drawOutline(canvas: p5) {
     canvas.fill(this.backgroundColor)
-    canvas.circle(this.position.x, this.position.y, 40)
+    canvas.circle(this.position.x, this.position.y, 30)
   }
 
   private drawText(canvas: p5) {
