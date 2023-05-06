@@ -1,6 +1,6 @@
+import { Mutation } from '../tree-impl/common'
 import {
   isRed,
-  Mutation,
   insert,
   LinkColor,
   RedBlackNode,
