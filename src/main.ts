@@ -7,15 +7,26 @@ function randomChar() {
   return String.fromCharCode(Math.floor(Math.random() * 26) + 65)
 }
 
-const visualizers: Visualizer[] = []
+async function insertChar(vv: Visualizer[], char: string) {
+  await Promise.all(vv.map((v) => v.insertChar(char)))
+}
+
+function restart(vv: Visualizer[]) {
+  vv.forEach((v) => v.startAnimation())
+}
+
+function isAnyTreeOversized(vv: Visualizer[]) {
+  return vv.some((v) => v.isOversized)
+}
 
 const rbtEl = document.querySelector<HTMLElement>('#rb-tree')!
-visualizers.push(new Visualizer(rbtEl, insertRedBlack))
-
 const unbalancedEl = document.querySelector<HTMLElement>('#bin-tree')!
-visualizers.push(new Visualizer(unbalancedEl, insertUnbalanced))
+const visualizers = [
+  new Visualizer(rbtEl, insertRedBlack),
+  new Visualizer(unbalancedEl, insertUnbalanced),
+]
 
 while (true) {
-  const char = randomChar()
-  await Promise.all(visualizers.map((v) => v.insertChar(char)))
+  await insertChar(visualizers, randomChar())
+  if (isAnyTreeOversized(visualizers)) restart(visualizers)
 }

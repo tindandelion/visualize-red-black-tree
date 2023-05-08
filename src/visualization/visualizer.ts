@@ -52,6 +52,17 @@ export class Visualizer {
     })
   }
 
+  get isOversized() {
+    return !!this.currentVisualization?.isOversized
+  }
+
+  startAnimation() {
+    this.currentVisualization = undefined
+    this.nextVisualization = undefined
+    this.transition = FinishedTransition
+    this.onInsertionComplete()
+  }
+
   private setup(width: number, height: number) {
     this.p5.createCanvas(width, height)
     this.startAnimation()
@@ -94,20 +105,11 @@ export class Visualizer {
       return
     }
     this.nextVisualization = this.visualizeTree(mutation.result)
-    if (this.nextVisualization.isOversized) this.startAnimation()
-    else
-      this.transition = this.createTransition(
-        mutation,
-        this.currentVisualization!,
-        this.nextVisualization
-      )
-  }
-
-  private startAnimation() {
-    this.currentVisualization = undefined
-    this.nextVisualization = undefined
-    this.transition = FinishedTransition
-    this.onInsertionComplete()
+    this.transition = this.createTransition(
+      mutation,
+      this.currentVisualization!,
+      this.nextVisualization
+    )
   }
 
   private nextMutation() {
