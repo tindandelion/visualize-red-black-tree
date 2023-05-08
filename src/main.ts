@@ -19,14 +19,16 @@ function isAnyTreeOversized(vv: Visualizer[]) {
   return vv.some((v) => v.isOversized)
 }
 
-const rbtEl = document.querySelector<HTMLElement>('#rb-tree')!
-const unbalancedEl = document.querySelector<HTMLElement>('#bin-tree')!
-const visualizers = [
-  new Visualizer(rbtEl, insertRedBlack),
-  new Visualizer(unbalancedEl, insertUnbalanced),
-]
+;(async () => {
+  const rbtEl = document.querySelector<HTMLElement>('#rb-tree')!
+  const unbalancedEl = document.querySelector<HTMLElement>('#bin-tree')!
+  const visualizers = [
+    new Visualizer(rbtEl, insertRedBlack),
+    new Visualizer(unbalancedEl, insertUnbalanced),
+  ]
 
-while (true) {
-  await insertChar(visualizers, randomChar())
-  if (isAnyTreeOversized(visualizers)) restart(visualizers)
-}
+  while (true) {
+    await insertChar(visualizers, randomChar())
+    if (isAnyTreeOversized(visualizers)) restart(visualizers)
+  }
+})()
