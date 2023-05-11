@@ -1,16 +1,46 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+#app-header {
+  font-size: xx-large;
+  text-align: center;
+  padding: 0.3em;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  background-color: #002b36;
+  color: #fdf6e3;
+}
+
 #app {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  flex-grow: 1;
+  background-color: aqua;
   display: flex;
 }
 
-#rb-tree {
+.tree-container {
   width: 50%;
+  display: flex;
+  flex-direction: column;
 }
 
-#bin-tree {
-  width: 50%;
+.tree-header {
+  font-size: x-large;
+  text-align: center;
+  padding: 0.3em;
+  font-family: 'Nunito', sans-serif;
+  background-color: #586e75;
+  color: #fdf6e3;
+}
+
+.tree-canvas {
+  flex-grow: 1;
 }

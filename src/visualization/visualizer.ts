@@ -26,7 +26,7 @@ export class Visualizer {
   private mutations: Mutation<VisualNode>[] = []
 
   constructor(
-    element: HTMLElement,
+    private readonly element: HTMLElement,
     private readonly inserter: InsertionFunction
   ) {
     const sketch = (p5: P5) => {
@@ -34,10 +34,6 @@ export class Visualizer {
       p5.draw = () => this.draw()
     }
     this.p5 = new P5(sketch, element)
-
-    new ResizeObserver(([{ contentRect }]) =>
-      this.p5.resizeCanvas(contentRect.right, contentRect.bottom)
-    ).observe(element)
   }
 
   insertChar(char: string): Promise<void> {

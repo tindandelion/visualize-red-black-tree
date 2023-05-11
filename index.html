@@ -3,12 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap"
+      rel="stylesheet" />
     <title>Red Black Tree Animations</title>
   </head>
   <body>
+    <header id="app-header">Red-Black Tree Construction Demo</header>
     <div id="app">
-      <div id="rb-tree"></div>
-      <div id="bin-tree"></div>
+      <div class="tree-container">
+        <header class="tree-header">Red-Black Tree</header>
+        <div class="tree-canvas" id="rb-tree"></div>
+      </div>
+      <div class="tree-container">
+        <header class="tree-header">Unbalanced Tree</header>
+        <div class="tree-canvas" id="bin-tree"></div>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
