@@ -3,8 +3,20 @@ import { insert as insertUnbalanced } from './tree-impl/unbalanced-tree'
 import './style.css'
 import { Visualizer } from './visualization/visualizer'
 
-function randomChar() {
-  return String.fromCharCode(Math.floor(Math.random() * 26) + 65)
+function shuffle<T>(a: T[]) {
+  const n = a.length
+  for (let i = 0; i < n; i++) {
+    const r = Math.floor(Math.random() * (n - i))
+    const tmp = a[i]
+    a[i] = a[r]
+    a[r] = tmp
+  }
+}
+
+function shuffledArray(): string[] {
+  const chars = [...Array(26).keys()].map((k) => String.fromCharCode(k + 65))
+  shuffle(chars)
+  return chars
 }
 
 async function insertChar(vv: Visualizer[], char: string) {
@@ -22,13 +34,17 @@ function isAnyTreeOversized(vv: Visualizer[]) {
 ;(async () => {
   const rbtEl = document.querySelector<HTMLElement>('#rb-tree')!
   const unbalancedEl = document.querySelector<HTMLElement>('#bin-tree')!
-  const visualizers = [
-    new Visualizer(rbtEl, insertRedBlack),
-    new Visualizer(unbalancedEl, insertUnbalanced),
-  ]
+  const visualizers = await Promise.all([
+    Visualizer.make(rbtEl, insertRedBlack),
+    Visualizer.make(unbalancedEl, insertUnbalanced),
+  ])
 
+  let chars = shuffledArray()
   while (true) {
-    await insertChar(visualizers, randomChar())
-    if (isAnyTreeOversized(visualizers)) restart(visualizers)
+    await insertChar(visualizers, chars.pop()!)
+    if (isAnyTreeOversized(visualizers) || chars.length === 0) {
+      chars = shuffledArray()
+      restart(visualizers)
+    }
   }
 })()

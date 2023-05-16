@@ -22,10 +22,16 @@ export class Visualizer {
   private currentVisualization?: TreeVisualization
   private nextVisualization?: TreeVisualization
   private transition: VisualizationTransition = FinishedTransition
-  private onInsertionComplete = () => {}
+  private onReadyToInsert = () => {}
   private mutations: Mutation<VisualNode>[] = []
 
-  constructor(
+  static async make(element: HTMLElement, inserter: InsertionFunction) {
+    const v = new Visualizer(element, inserter)
+    await v.waitForStart()
+    return v
+  }
+
+  private constructor(
     element: HTMLElement,
     private readonly inserter: InsertionFunction
   ) {
@@ -47,19 +53,25 @@ export class Visualizer {
       ),
     ]
     return new Promise<void>((resolve) => {
-      this.onInsertionComplete = resolve
+      this.onReadyToInsert = resolve
     })
+  }
+
+  public startAnimation() {
+    this.currentVisualization = undefined
+    this.nextVisualization = undefined
+    this.transition = FinishedTransition
+    this.onReadyToInsert()
   }
 
   get isOversized() {
     return !!this.currentVisualization?.isOversized
   }
 
-  startAnimation() {
-    this.currentVisualization = undefined
-    this.nextVisualization = undefined
-    this.transition = FinishedTransition
-    this.onInsertionComplete()
+  private waitForStart(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      this.onReadyToInsert = resolve
+    })
   }
 
   private setup(width: number, height: number) {
@@ -101,7 +113,7 @@ export class Visualizer {
   private generateNextVisualization() {
     const mutation = this.nextMutation()
     if (!mutation) {
-      this.onInsertionComplete()
+      this.onReadyToInsert()
       return
     }
     this.nextVisualization = this.visualizeTree(mutation.result)
