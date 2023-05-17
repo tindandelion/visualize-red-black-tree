@@ -49,7 +49,7 @@ body {
   flex-grow: 1;
 }
 
-@media (min-width: 400px) {
+@media (min-width: 900px) {
   :root {
     font-size: 1em;
   }
