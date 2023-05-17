@@ -1,3 +1,7 @@
+:root {
+  font-size: calc(0.5em + 0.5vw);
+}
+
 .container {
   position: absolute;
   top: 0;

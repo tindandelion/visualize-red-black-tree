@@ -41,11 +41,6 @@ export class Visualizer {
     }
     this.p5 = new P5(sketch, element)
     new ResizeObserver(() => {
-      console.log('Resize')
-      console.log('Resize canvas to ', [
-        element.clientWidth,
-        element.clientHeight,
-      ])
       this.p5.resizeCanvas(element.clientWidth, element.clientHeight)
     }).observe(element)
   }
