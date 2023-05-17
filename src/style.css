@@ -4,7 +4,7 @@ body {
 }
 
 :root {
-  font-size: 0.6em;
+  font-size: calc(0.5em + 0.5vw);
 }
 
 body {
@@ -47,10 +47,4 @@ body {
 
 .tree-canvas {
   flex-grow: 1;
-}
-
-@media (min-width: 900px) {
-  :root {
-    font-size: 1em;
-  }
 }
