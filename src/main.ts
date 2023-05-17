@@ -1,6 +1,5 @@
 import { insert as insertRedBlack } from './tree-impl/red-black-tree'
 import { insert as insertUnbalanced } from './tree-impl/unbalanced-tree'
-import './style.css'
 import { Visualizer } from './visualization/visualizer'
 
 function shuffle<T>(a: T[]) {

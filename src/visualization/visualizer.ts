@@ -80,8 +80,7 @@ export class Visualizer {
   }
 
   private setup(width: number, height: number) {
-    const cnv = this.p5.createCanvas(width, height)
-
+    this.p5.createCanvas(width, height)
     this.startAnimation()
   }
 

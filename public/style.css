@@ -33,6 +33,7 @@
 
 .tree-cell {
   position: relative;
+  background-color: #fdf6e3;
 }
 
 .tree-canvas {
